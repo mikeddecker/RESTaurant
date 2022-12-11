@@ -36,9 +36,24 @@ namespace RESTaurant_BL.Services {
         }
 
         public static List<string> GetKitchenTypes() {
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
             return new List<string>(ConfigurationManager.AppSettings["kitchenTypes"].Split(';'));
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+        }
+
+        public List<Restaurant> GetRestaurants() {
+            try {
+                return restaurantRepo.GetRestaurants();
+            } catch (Exception ex) {
+                throw new RestaurantServiceException("GetRestaurants", ex);
+            }
+        }
+
+        public Restaurant GetRestaurant(int restaurantId) {
+            try {
+                if (!restaurantRepo.DoesExist(restaurantId)) { throw new RestaurantServiceException("GetRestaurant - RestaurantId doesn't exist"); }
+                return restaurantRepo.GetRestaurant(restaurantId);
+            } catch (Exception ex) {
+                throw new RestaurantServiceException("GetRestaurant", ex);
+            }
         }
     }
 }

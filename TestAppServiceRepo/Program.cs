@@ -5,7 +5,7 @@ using RESTaurant_DL.Repositories;
 
 Console.WriteLine("Hello, World!");
 
-string connectionstring = "Data Source=LAPTOP-BFPIKR71\\SQLEXPRESS;Initial Catalog=RESTaurant;Integrated Security=True";
+string connectionstring = "Data Source=LAPTOP-BFPIKR71\\SQLEXPRESS;Initial Catalog=RESTaurant;Integrated Security=True; TrustServerCertificate=True";
 IRestaurantRepository restaurantRepo = new RestaurantRepository(connectionstring);
 RestaurantService restaurantService = new RestaurantService(restaurantRepo);
 
@@ -16,4 +16,12 @@ foreach (string kitchenType in RestaurantService.GetKitchenTypes())
 
 //restaurantRepo.AddLocation
 Restaurant cartoon = new Restaurant("Cartoon", new Location(1945, "Lebbeke"), "chinees", "info@cartoon.be", "+32478090859");
-Console.WriteLine(restaurantService.AddRestaurant(cartoon).RestaurantId);
+Restaurant ratatouille = new Restaurant("Ratatouille", new Location(7500, "Paris"), "french", "info@ratatouille.be", "+32478090859");
+try
+{
+    Console.WriteLine(restaurantService.AddRestaurant(ratatouille).RestaurantId);
+}
+catch (Exception ex)
+{
+    Console.WriteLine(ex.Message);
+}

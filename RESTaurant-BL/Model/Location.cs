@@ -11,22 +11,14 @@ namespace RESTaurant_BL.Model {
         private string city;
         private string? street;
         private string? housenumber;
-        private int locationId;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public Location(int postalCode, string city) {
             SetPostalCode(postalCode);
             SetCity(city);
         }
-
-        public Location(int id, int postalCode, string city) {
-            SetLocationId(id);
-            SetPostalCode(postalCode);
-            SetCity(city);
-        }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-        public int LocationId { get => locationId; private set => SetLocationId(value); }
         public int PostalCode { get => postalCode; private set => SetPostalCode(value); }
         public string City { get => city; private set => SetCity(value); }
 
@@ -35,11 +27,6 @@ namespace RESTaurant_BL.Model {
         public string? Housenumber { get => housenumber; private set => SetHousenumber(value); }
 #pragma warning restore CS8604 // Possible null reference argument.
 
-
-        public void SetLocationId(int id) {
-            if (id <= 0) { throw new LocationException("SetLocationId - Id smaller than 1"); }
-            locationId = id;
-        }
 
         public void SetPostalCode(int postalCode) {
             if (postalCode < 1000 || postalCode > 9999) { throw new LocationException("SetPostalCode - Postcode must be between 1000 and 9999"); }
