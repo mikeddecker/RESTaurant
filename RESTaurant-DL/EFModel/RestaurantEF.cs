@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RESTaurant_BL.Model;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,18 +7,34 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RESTaurant_DL.EFModel {
-    public class RestaurantEF {
-        public RestaurantEF() {
+namespace RESTaurant_DL.EFModel
+{
+    public class RestaurantEF
+    {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        public RestaurantEF()
+        {
         }
-
-        public RestaurantEF(int restaurantId, string name, LocationEF location, string kitchen, string email, string phone) {
-            RestaurantId = restaurantId;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        public RestaurantEF(string name, string kitchen, string email, string phone, int postalCode, string city)
+        {
             Name = name;
-            Location = location;
             Kitchen = kitchen;
             Email = email;
             Phone = phone;
+            PostalCode = postalCode;
+            City = city;
+        }
+
+        public RestaurantEF(int restaurantId, string name, string kitchen, string email, string phone, int postalCode, string city)
+        {
+            RestaurantId = restaurantId;
+            Name = name;
+            Kitchen = kitchen;
+            Email = email;
+            Phone = phone;
+            PostalCode = postalCode;
+            City = city;
         }
 
         [Key]
@@ -26,9 +43,6 @@ namespace RESTaurant_DL.EFModel {
         [Required]
         [Column(TypeName = "nvarchar(50)")]
         public string Name { get; set; }
-
-        [Required]
-        public LocationEF Location { get; set; }
 
         [Required]
         [Column(TypeName = "nvarchar(20)")]
@@ -41,6 +55,20 @@ namespace RESTaurant_DL.EFModel {
         [Required]
         [Column(TypeName = "nvarchar(20)")]
         public string Phone { get; set; }
+
+        [Required]
+        [Column(TypeName = "INT")]
+        public int PostalCode { get; set; }
+
+        [Required]
+        [Column(TypeName = "nvarchar(50)")]
+        public string City { get; set; }
+
+        [Column(TypeName = "nvarchar(100)")]
+        public string? Street { get; set; }
+
+        [Column(TypeName = "nvarchar(20)")]
+        public string? HousenumberLabel { get; set; }
 
         
     }

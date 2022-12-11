@@ -13,6 +13,7 @@ namespace RESTaurant_BL.Model {
         private string? housenumber;
         private int locationId;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public Location(int postalCode, string city) {
             SetPostalCode(postalCode);
             SetCity(city);
@@ -23,13 +24,16 @@ namespace RESTaurant_BL.Model {
             SetPostalCode(postalCode);
             SetCity(city);
         }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public int LocationId { get => locationId; private set => SetLocationId(value); }
         public int PostalCode { get => postalCode; private set => SetPostalCode(value); }
         public string City { get => city; private set => SetCity(value); }
 
+#pragma warning disable CS8604 // Possible null reference argument.
         public string? Street { get => street; private set => SetStreet(value); }
         public string? Housenumber { get => housenumber; private set => SetHousenumber(value); }
+#pragma warning restore CS8604 // Possible null reference argument.
 
 
         public void SetLocationId(int id) {

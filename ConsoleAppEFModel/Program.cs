@@ -8,3 +8,4 @@ string connectionstring = "Data Source=LAPTOP-BFPIKR71\\SQLEXPRESS;Initial Catal
 RestaurantContext db = new RestaurantContext(connectionstring);
 db.Database.EnsureDeleted();
 db.Database.EnsureCreated();
+Console.WriteLine(null == null);

@@ -20,9 +20,10 @@ namespace RESTaurant_BL.Model {
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         internal Restaurant(int restaurantId, string name, Location location, string kitchen, string email, string phone) {
+            // No checks, because it's the constructor for the repo. Only for location, to check if its not null
             RestaurantId = restaurantId;
-            SetName(name);
-            SetLocation(location);
+            Name = name;
+            Location = location ?? throw new RestaurantException("Restaurant - Location is null");
             Kitchen = kitchen;
             Email = email;
             Phone = phone;
