@@ -8,7 +8,19 @@ namespace RESTaurant.Mappers {
         internal static Restaurant MapRestaurant(RestaurantRESTinputDTO restaurantRESTinput) {
             try {
                 Location location = MapLocation(restaurantRESTinput.Location);
-                return new Restaurant(restaurantRESTinput.Name, location, restaurantRESTinput.Kitchen, restaurantRESTinput.Email, restaurantRESTinput.Phone);
+                return new Restaurant(restaurantRESTinput.Name, location, restaurantRESTinput.Kitchen.ToLower(), restaurantRESTinput.Email, restaurantRESTinput.Phone);
+            } catch (Exception ex) {
+                throw new MapException("MapRestaurant", ex);
+            }
+        }
+
+        internal static Restaurant MapRestaurant(int restaurantId, RestaurantRESTinputDTO restaurantRESTinput) {
+            try {
+                Restaurant r = MapRestaurant(restaurantRESTinput);
+                r.SetRestaurantId(restaurantId);
+                return r;
+            } catch (MapException) {
+                throw;
             } catch (Exception ex) {
                 throw new MapException("MapRestaurant", ex);
             }

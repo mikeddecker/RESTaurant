@@ -13,5 +13,7 @@ namespace RESTaurant_BL.Interfaces {
         bool DoesExist(int restaurantId);
         List<Restaurant> GetRestaurants();
         Restaurant GetRestaurant(int restaurantId);
+        Restaurant UpdateRestaurant(Restaurant restaurant);
+        void DeleteRestaurant(int restaurantId);
     }
 }

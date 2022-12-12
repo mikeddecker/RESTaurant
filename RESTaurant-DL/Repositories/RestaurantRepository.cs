@@ -73,5 +73,24 @@ namespace RESTaurant_DL.Repositories {
                 SaveAndClear();
             }
         }
+
+        public Restaurant UpdateRestaurant(Restaurant restaurant) {
+            try {
+                RestaurantEF restaurantEFDB = ctx.Restaurant.Single(r => r.RestaurantId == restaurant.RestaurantId);
+                if (restaurantEFDB.Name != restaurant.Name) { restaurantEFDB.Name = restaurant.Name; }
+                if (restaurantEFDB.Email != restaurant.Email) { restaurantEFDB.Email = restaurant.Email; }
+                if (restaurantEFDB.Phone != restaurant.Phone) { restaurantEFDB.Phone = restaurant.Phone; }
+                if (restaurantEFDB.Kitchen != restaurant.Kitchen) { restaurantEFDB.Kitchen = restaurant.Kitchen; }
+                if (restaurantEFDB.PostalCode != restaurant.Location.PostalCode) { restaurantEFDB.PostalCode = restaurant.Location.PostalCode; }
+                if (restaurantEFDB.City != restaurant.Location.City) { restaurantEFDB.City = restaurant.Location.City; }
+                if (restaurantEFDB.Street != restaurant.Location.Street) { restaurantEFDB.Street = restaurant.Location.Street; }
+                if (restaurantEFDB.HousenumberLabel != restaurant.Location.Housenumber) { restaurantEFDB.HousenumberLabel = restaurant.Location.Housenumber; }
+                return MapToDomain.MapRestaurant(restaurantEFDB);
+            } catch (Exception ex) {
+                throw new RestaurantRepoException("GetRestaurant", ex);
+            } finally {
+                SaveAndClear();
+            }
+        }
     }
 }

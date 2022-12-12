@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,21 +17,15 @@ namespace RESTaurant_BL.Services {
             this.restaurantRepo = restaurantRepo;
         }
 
-        public Restaurant AddRestaurant(Restaurant restaurant)
-        {
-            try
-            {
+        public Restaurant AddRestaurant(Restaurant restaurant) {
+            try {
                 if (restaurant == null) { throw new RestaurantServiceException("AddRestaurant - Restaurant is null"); }
                 if (restaurantRepo.DoesExist(restaurant)) { throw new RestaurantServiceException("AddRestaurant - Restaurant already exists"); }
                 restaurantRepo.AddRestaurant(restaurant);
                 return restaurant;
-            }
-            catch (RestaurantServiceException)
-            {
+            } catch (RestaurantServiceException) {
                 throw;
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 throw new RestaurantServiceException("AddRestaurant", ex);
             }
         }
@@ -53,6 +48,39 @@ namespace RESTaurant_BL.Services {
                 return restaurantRepo.GetRestaurant(restaurantId);
             } catch (Exception ex) {
                 throw new RestaurantServiceException("GetRestaurant", ex);
+            }
+        }
+
+        public bool DoesExist(int restaurantId) {
+            try {
+                return restaurantRepo.DoesExist(restaurantId);
+            } catch (Exception ex) {
+                throw new RestaurantServiceException("DoesExist", ex);
+            }
+        }
+
+        public Restaurant UpdateRestaurant(Restaurant restaurant) {
+            try {
+                if (restaurant == null) { throw new RestaurantServiceException("UpdateRestaurant - Restaurant is null"); }
+                if (!restaurantRepo.DoesExist(restaurant.RestaurantId)) { throw new RestaurantServiceException("UpdateRestaurant - Restaurant does not exist"); }
+                Restaurant restaurantDB = restaurantRepo.GetRestaurant(restaurant.RestaurantId);
+                if (restaurantDB.HasTheSameProperties(restaurant)) { throw new RestaurantServiceException("Restaurant hasn't changed"); }
+                return restaurantRepo.UpdateRestaurant(restaurant);
+            } catch (RestaurantServiceException) {
+                throw;
+            } catch (Exception ex) {
+                throw new RestaurantServiceException("UpdateRestaurant", ex);
+            }
+        }
+
+        public void DeleteRestaurant(int restaurantId) {
+            try {
+                if (!restaurantRepo.DoesExist(restaurantId)) { throw new RestaurantServiceException("UpdateRestaurant - Restaurant does not exist"); }
+                return restaurantRepo.DeleteRestaurant(restaurantId);
+            } catch (RestaurantServiceException) {
+                throw;
+            } catch (Exception ex) {
+                throw new RestaurantServiceException("UpdateRestaurant", ex);
             }
         }
     }

@@ -77,7 +77,22 @@ namespace RESTaurant_BL.Model {
             this.phone = phone;
         }
 
+        public bool HasTheSameProperties(Restaurant restaurant) {
+            return RestaurantId == restaurant.RestaurantId &&
+                   Name == restaurant.Name &&
+                   EqualityComparer<Location>.Default.Equals(Location, restaurant.Location) &&
+                   Kitchen == restaurant.Kitchen &&
+                   Email == restaurant.Email &&
+                   Phone == restaurant.Phone;
+        }
 
+        public override int GetHashCode() {
+            return HashCode.Combine(RestaurantId, Name, Location, Kitchen, Email, Phone);
+        }
 
+        public override bool Equals(object? obj) {
+            return obj is Restaurant restaurant &&
+                   restaurantId == restaurant.restaurantId;
+        }
     }
 }

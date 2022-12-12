@@ -48,5 +48,34 @@ namespace RESTaurant.Controllers {
                 return NotFound(ex.Message);
             }
         }
+
+        [HttpPut("{restaurantId}")]
+        public IActionResult UpdateRestaurant(int restaurantId, [FromBody] RestaurantRESTinputDTO restaurantRESTinput) {
+            try {
+                if (restaurantService.DoesExist(restaurantId)) {
+                    Restaurant r = MapToDomain.MapRestaurant(restaurantId, restaurantRESTinput);
+                    r = restaurantService.UpdateRestaurant(r);
+                    return CreatedAtAction(nameof(UpdateRestaurant), restaurantId, MapToREST.MapRestaurant(hostURL, r));
+                } else {
+                    return NotFound("Restaurant niet gevonden");
+                }
+            } catch (Exception ex) {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("{restaurantId")]
+        public IActionResult DeleteRestaurant(int restaurantId) {
+            try {
+                if (restaurantService.DoesExist(restaurantId)) {
+                    restaurantService.DeleteRestaurant(restaurantId);
+                    return NoContent();
+                } else {
+                    return NotFound("Restaurant niet gevonden");
+                }
+            } catch (Exception ex) {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
