@@ -1,11 +1,11 @@
-﻿using RESTaurant_BL.Exceptions;
+﻿using RESTaurantBL.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RESTaurant_BL.Model {
+namespace RESTaurantBL.Model {
     public class Location {
         private int postalCode;
         private string city;

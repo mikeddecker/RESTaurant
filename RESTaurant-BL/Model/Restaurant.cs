@@ -1,5 +1,5 @@
-﻿using RESTaurant_BL.Exceptions;
-using RESTaurant_BL.Services;
+﻿using RESTaurantBL.Exceptions;
+using RESTaurantBL.Services;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RESTaurant_BL.Model {
+namespace RESTaurantBL.Model {
     public class Restaurant {
         private string name;
         private int restaurantId;

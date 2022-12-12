@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RESTaurant_DL.EFModel;
+using RESTaurantDLEF.EFModel;
 
-namespace RESTaurant_DL {
+namespace RESTaurantDLEF {
     public class RestaurantContext : DbContext {
         private string _connectionString;
 
@@ -14,5 +14,8 @@ namespace RESTaurant_DL {
             optionsBuilder.UseSqlServer(_connectionString);
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder) {
+            modelBuilder.Entity<RestaurantEF>().Property(r => r.IsDeleted).HasDefaultValue(false);
+        }
     }
 }

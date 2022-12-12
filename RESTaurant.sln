@@ -5,15 +5,15 @@ VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RESTaurant", "RESTaurant\RESTaurant.csproj", "{8F8ACA74-6F73-4697-8320-D79C33D676D7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RESTaurant-BL", "RESTaurant-BL\RESTaurant-BL.csproj", "{A6A0A005-E8E4-4773-BF36-0D8C62EF6318}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RESTaurantBL", "RESTaurant-BL\RESTaurantBL.csproj", "{A6A0A005-E8E4-4773-BF36-0D8C62EF6318}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RESTaurant-DL-EF", "RESTaurant-DL\RESTaurant-DL-EF.csproj", "{A1462BA0-1EEE-4765-B941-BB15691F86B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RESTaurantDLEF", "RESTaurant-DL\RESTaurantDLEF.csproj", "{A1462BA0-1EEE-4765-B941-BB15691F86B2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestApps", "TestApps", "{04817CD1-0F90-404E-9427-61632FAFEBCE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleAppEFModel", "ConsoleAppEFModel\ConsoleAppEFModel.csproj", "{7C7620BF-2857-48FF-9DA5-ABC9802A05E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAppServiceRepo", "TestAppServiceRepo\TestAppServiceRepo.csproj", "{7B42D659-DD64-476F-A46D-553311F398B1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestAppServiceRepo", "TestAppServiceRepo\TestAppServiceRepo.csproj", "{7B42D659-DD64-476F-A46D-553311F398B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

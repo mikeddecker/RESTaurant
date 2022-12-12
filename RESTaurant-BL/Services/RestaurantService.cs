@@ -1,6 +1,6 @@
-﻿using RESTaurant_BL.Exceptions;
-using RESTaurant_BL.Interfaces;
-using RESTaurant_BL.Model;
+﻿using RESTaurantBL.Exceptions;
+using RESTaurantBL.Interfaces;
+using RESTaurantBL.Model;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RESTaurant_BL.Services {
+namespace RESTaurantBL.Services {
     public class RestaurantService {
         private IRestaurantRepository restaurantRepo;
 
@@ -76,7 +76,7 @@ namespace RESTaurant_BL.Services {
         public void DeleteRestaurant(int restaurantId) {
             try {
                 if (!restaurantRepo.DoesExist(restaurantId)) { throw new RestaurantServiceException("UpdateRestaurant - Restaurant does not exist"); }
-                return restaurantRepo.DeleteRestaurant(restaurantId);
+                restaurantRepo.DeleteRestaurant(restaurantId);
             } catch (RestaurantServiceException) {
                 throw;
             } catch (Exception ex) {

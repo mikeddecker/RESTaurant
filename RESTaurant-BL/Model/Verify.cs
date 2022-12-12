@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace RESTaurant_BL.Model {
+namespace RESTaurantBL.Model {
     public static class Verify {
         public static bool IsValidEmailSyntax(string email) {
             if (string.IsNullOrWhiteSpace(email)) { return false; }

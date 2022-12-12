@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RESTaurant.Exceptions;
 using RESTaurant.Model.Input;
-using RESTaurant_BL.Model;
+using RESTaurantBL.Model;
 
 namespace RESTaurant.Mappers {
     public class MapToDomain {

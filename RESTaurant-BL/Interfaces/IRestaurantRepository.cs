@@ -1,11 +1,11 @@
-﻿using RESTaurant_BL.Model;
+﻿using RESTaurantBL.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RESTaurant_BL.Interfaces {
+namespace RESTaurantBL.Interfaces {
     public interface IRestaurantRepository
     {
         Restaurant AddRestaurant(Restaurant restaurant);

@@ -1,4 +1,4 @@
-﻿using RESTaurant_BL.Model;
+﻿using RESTaurantBL.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RESTaurant_DL.EFModel
+namespace RESTaurantDLEF.EFModel
 {
     public class RestaurantEF
     {
@@ -70,6 +70,7 @@ namespace RESTaurant_DL.EFModel
         [Column(TypeName = "nvarchar(20)")]
         public string? HousenumberLabel { get; set; }
 
-        
+        [Column(TypeName = "BIT")]
+        public bool? IsDeleted { get; set; } = false; // Default value false is set in OnModelCreating
     }
 }

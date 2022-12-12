@@ -1,6 +1,6 @@
-﻿using RESTaurant_BL.Model;
-using RESTaurant_DL.EFModel;
-using RESTaurant_DL.Exceptions;
+﻿using RESTaurantBL.Model;
+using RESTaurantDLEF.EFModel;
+using RESTaurantDLEF.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RESTaurant_DL.Mappers {
+namespace RESTaurantDLEF.Mappers {
     internal class MapToDomain {
         internal static Restaurant MapRestaurant(RestaurantEF EFr) {
             try {

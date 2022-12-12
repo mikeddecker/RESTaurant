@@ -1,6 +1,6 @@
 ﻿using RESTaurant.Exceptions;
 using RESTaurant.Model.Output;
-using RESTaurant_BL.Model;
+using RESTaurantBL.Model;
 
 namespace RESTaurant.Mappers {
     public class MapToREST {

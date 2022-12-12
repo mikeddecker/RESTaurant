@@ -1,7 +1,7 @@
-﻿using RESTaurant_BL.Interfaces;
-using RESTaurant_BL.Model;
-using RESTaurant_BL.Services;
-using RESTaurant_DL.Repositories;
+﻿using RESTaurantBL.Interfaces;
+using RESTaurantBL.Model;
+using RESTaurantBL.Services;
+using RESTaurantDLEF.Repositories;
 
 Console.WriteLine("Hello, World!");
 

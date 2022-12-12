@@ -1,6 +1,8 @@
-using RESTaurant_BL.Interfaces;
-using RESTaurant_BL.Services;
-using RESTaurant_DL.Repositories;
+using Microsoft.AspNetCore.Hosting;
+using RESTaurantBL.Interfaces;
+using RESTaurantBL.Services;
+using RESTaurantDLEF;
+using RESTaurantDLEF.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 string connectionstring = "Data Source=LAPTOP-BFPIKR71\\SQLEXPRESS;Initial Catalog=RESTaurant;Integrated Security=True; TrustServerCertificate=True";
@@ -13,6 +15,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IRestaurantRepository>(r => new RestaurantRepository(connectionstring));
 builder.Services.AddSingleton<RestaurantService>();
+//builder.Services.AddDbContext<RestaurantContext>();
 
 var app = builder.Build();
 

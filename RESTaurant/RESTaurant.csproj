@@ -15,12 +15,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RESTaurant-BL\RESTaurant-BL.csproj" />
-    <ProjectReference Include="..\RESTaurant-DL\RESTaurant-DL-EF.csproj" />
+    <ProjectReference Include="..\RESTaurant-BL\RESTaurantBL.csproj" />
+    <ProjectReference Include="..\RESTaurant-DL\RESTaurantDLEF.csproj" />
   </ItemGroup>
 
 </Project>

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RESTaurant_DL.Exceptions
+namespace RESTaurantDLEF.Exceptions
 {
     internal class RestaurantRepoException : Exception
     {

@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using RESTaurant.Mappers;
 using RESTaurant.Model.Input;
 using RESTaurant.Model.Output;
-using RESTaurant_BL.Model;
-using RESTaurant_BL.Services;
-using RESTaurant_DL.EFModel;
+using RESTaurantBL.Model;
+using RESTaurantBL.Services;
+using RESTaurantDLEF.EFModel;
 
 namespace RESTaurant.Controllers {
     [Route("api/[controller]")]

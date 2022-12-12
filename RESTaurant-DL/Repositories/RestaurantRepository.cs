@@ -1,8 +1,8 @@
-﻿using RESTaurant_BL.Interfaces;
-using RESTaurant_BL.Model;
-using RESTaurant_DL.EFModel;
-using RESTaurant_DL.Exceptions;
-using RESTaurant_DL.Mappers;
+﻿using RESTaurantBL.Interfaces;
+using RESTaurantBL.Model;
+using RESTaurantDLEF.EFModel;
+using RESTaurantDLEF.Exceptions;
+using RESTaurantDLEF.Mappers;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RESTaurant_DL.Repositories {
+namespace RESTaurantDLEF.Repositories {
     public class RestaurantRepository : IRestaurantRepository {
         private RestaurantContext ctx;
         public RestaurantRepository(string connectionString) {
@@ -88,6 +88,17 @@ namespace RESTaurant_DL.Repositories {
                 return MapToDomain.MapRestaurant(restaurantEFDB);
             } catch (Exception ex) {
                 throw new RestaurantRepoException("GetRestaurant", ex);
+            } finally {
+                SaveAndClear();
+            }
+        }
+
+        public void DeleteRestaurant(int restaurantId) {
+            try {
+                RestaurantEF restaurantEFDB = ctx.Restaurant.Single(r => r.RestaurantId == restaurantId);
+                restaurantEFDB.IsDeleted = true;
+            } catch (Exception ex) {
+                throw new RestaurantRepoException("DeleteRestaurant", ex);
             } finally {
                 SaveAndClear();
             }

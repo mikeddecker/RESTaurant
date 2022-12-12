@@ -17,4 +17,4 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("3be0419d-83a3-4935-8e66-3a55fbbe49dd")]
 
-[assembly: InternalsVisibleTo("RESTaurant-DL-EF")]
+[assembly: InternalsVisibleTo("RESTaurantDLEF")]

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RESTaurant_BL.Exceptions {
+namespace RESTaurantBL.Exceptions {
     public class LocationException : Exception {
         public LocationException(string? message) : base(message) {
         }
