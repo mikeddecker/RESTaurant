@@ -1,4 +1,5 @@
-﻿using RESTaurantBL.Model;
+﻿using RESTaurant_DL.EFModel;
+using RESTaurantBL.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -72,5 +73,7 @@ namespace RESTaurantDLEF.EFModel
 
         [Column(TypeName = "BIT")]
         public bool? IsDeleted { get; set; } = false; // Default value false is set in OnModelCreating
+
+        public ICollection<TableEF> Tables { get; set; }
     }
 }

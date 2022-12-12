@@ -64,7 +64,7 @@ namespace RESTaurant.Controllers {
             }
         }
 
-        [HttpDelete("{restaurantId")]
+        [HttpDelete("{restaurantId}")]
         public IActionResult DeleteRestaurant(int restaurantId) {
             try {
                 if (restaurantService.DoesExist(restaurantId)) {
