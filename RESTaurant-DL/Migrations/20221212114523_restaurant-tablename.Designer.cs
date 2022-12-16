@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RESTaurantDLEF;
 
@@ -11,9 +12,11 @@ using RESTaurantDLEF;
 namespace RESTaurantDL.Migrations
 {
     [DbContext(typeof(RestaurantContext))]
-    partial class RestaurantContextModelSnapshot : ModelSnapshot
+    [Migration("20221212114523_restaurant-tablename")]
+    partial class restauranttablename
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -82,6 +85,9 @@ namespace RESTaurantDL.Migrations
                         .HasColumnType("BIT")
                         .HasDefaultValue(false);
 
+                    b.Property<int?>("RestaurantEFRestaurantId")
+                        .HasColumnType("int");
+
                     b.Property<int>("RestaurantId")
                         .HasColumnType("INT");
 
@@ -93,7 +99,7 @@ namespace RESTaurantDL.Migrations
 
                     b.HasKey("UnusedFakeTableId");
 
-                    b.HasIndex("RestaurantId");
+                    b.HasIndex("RestaurantEFRestaurantId");
 
                     b.ToTable("Table");
                 });
@@ -102,9 +108,7 @@ namespace RESTaurantDL.Migrations
                 {
                     b.HasOne("RESTaurantDLEF.EFModel.RestaurantEF", null)
                         .WithMany("Tables")
-                        .HasForeignKey("RestaurantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RestaurantEFRestaurantId");
                 });
 
             modelBuilder.Entity("RESTaurantDLEF.EFModel.RestaurantEF", b =>

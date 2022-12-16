@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace RESTaurantDLEF.EFModel
 {
+    [Table("Restaurant")]
     public class RestaurantEF
     {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -74,6 +75,7 @@ namespace RESTaurantDLEF.EFModel
         [Column(TypeName = "BIT")]
         public bool? IsDeleted { get; set; } = false; // Default value false is set in OnModelCreating
 
+        [ForeignKey("RestaurantId")]
         public ICollection<TableEF> Tables { get; set; }
     }
 }
