@@ -13,7 +13,7 @@
             TablenumberSeats = tablenumberSeats;
             foreach (int seats in tablenumberSeats.Values)
             {
-                if (SeatsAmount.ContainsKey(seats)) { SeatsAmount[seats]++; } else { SeatsAmount.Add(seats, 1); }
+                if (AmountOfTablesWithXSeats.ContainsKey(seats)) { AmountOfTablesWithXSeats[seats]++; } else { AmountOfTablesWithXSeats.Add(seats, 1); }
             }
         }
 
@@ -23,7 +23,7 @@
         public string Phone { get; set; }
         public string Kitchen { get; set; }
         public LocationRESToutputDTO Location { get; set; }
-        public Dictionary<int, int> SeatsAmount { get; set; } = new Dictionary<int, int>();
+        public Dictionary<int, int> AmountOfTablesWithXSeats { get; set; } = new Dictionary<int, int>();
         public Dictionary<int, int> TablenumberSeats { get; set; }
     }
 }

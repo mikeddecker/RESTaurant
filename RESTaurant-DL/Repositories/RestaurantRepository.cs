@@ -178,12 +178,13 @@ namespace RESTaurantDLEF.Repositories
 
         public Dictionary<int, int> GetTablesOfRestaurant(int restaurantId)
         {
-            List<TableEF> tablesEF = ctx.Table.Where(t => t.RestaurantId == restaurantId).ToList();
-            Dictionary<int ,int> seatsAmount = new Dictionary<int ,int>();
-            foreach (TableEF tableEF in tablesEF)
+            List<TableEF> tablesEF = ctx.Table.Where(t => t.RestaurantId == restaurantId).OrderBy(t => t.Tablenumber).ToList();
+            Dictionary<int ,int> tableSeats = new Dictionary<int ,int>();
+            foreach (TableEF tt in tablesEF)
             {
-
+                tableSeats.Add(tt.Tablenumber, tt.Seats);
             }
+            return tableSeats;
         }
     }
 }

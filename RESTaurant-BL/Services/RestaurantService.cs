@@ -90,12 +90,11 @@ namespace RESTaurantBL.Services {
             try
             {
                 if (restaurantId <= 0) { throw new RestaurantServiceException($"{System.Reflection.MethodBase.GetCurrentMethod().Name} - Invalid restaurant idea"); }
-                if (tableNumber <= 0) { throw new RestaurantServiceException($"{System.Reflection.MethodBase.GetCurrentMethod().Name} - Tablenumber must be more than 0"); }
                 if (seats <= 0) { throw new RestaurantServiceException($"{System.Reflection.MethodBase.GetCurrentMethod().Name} - Seats must be more than 0"); }
 
                 // Repo checks
-                if (!restaurantRepo.DoesRestaurantExist(restaurantId)) { throw new RestaurantServiceException($"{System.Reflection.MethodBase.GetCurrentMethod().Name} - RestaurantId does not exist"); }
-                if (restaurantRepo.HasRestaurantTableNumber(restaurantId, tableNumber)) { throw new RestaurantServiceException($"{System.Reflection.MethodBase.GetCurrentMethod()} - Restaurant already has a tablenumber {tableNumber}"); }
+                if (!restaurantRepo.DoesRestaurantExist(restaurantId)) { throw new RestaurantServiceException($"{System.Reflection.MethodBase.GetCurrentMethod().Name} - RestaurantIdea does not exist"); }
+                if (restaurantRepo.HasRestaurantTableNumber(restaurantId, tableNumber)) { throw new RestaurantServiceException($"{System.Reflection.MethodBase.GetCurrentMethod().Name} - Restaurant already has a tablenumber {tableNumber}"); }
 
                 restaurantRepo.AddTableToRestaurant(restaurantId, tableNumber, seats);
             }
@@ -105,7 +104,7 @@ namespace RESTaurantBL.Services {
             }
             catch (Exception ex)
             {
-                throw new RestaurantServiceException(System.Reflection.MethodBase.GetCurrentMethod().ToString(), ex);
+                throw new RestaurantServiceException(System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
             }
         }
 

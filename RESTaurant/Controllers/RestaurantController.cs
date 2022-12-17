@@ -79,18 +79,18 @@ namespace RESTaurant.Controllers {
         }
 
         [HttpPost]
-        [Route("{restaurantId}/table")]
-        public ActionResult<RestaurantDetailRESToutputDTO> AddRestaurantTable(int restaurantId, [FromBody]RestaurantTableRESTinputDTO tableRestInput) {
+        [Route("{restaurantId}/Table")]
+        public IActionResult AddRestaurantTable(int restaurantId, [FromBody]RestaurantTableRESTinputDTO tableRestInput) {
             try {
                 restaurantService.AddTableToRestaurant(restaurantId, tableRestInput.TableNumber, tableRestInput.Seats);
-                return CreatedAtAction(nameof(GetRestaurant), restaurantId, MapToREST.MapRestaurantDetails(hostURL, restaurantId, restaurantService));
+                return CreatedAtAction(nameof(GetRestaurantDetails), new { restaurantId = restaurantId }, MapToREST.MapRestaurantDetails(hostURL, restaurantId, restaurantService));
             } catch (Exception ex) {
                 return NotFound(ex.Message);
             }
         }
 
         [HttpGet("{restaurantId}/Details")]
-        public ActionResult<RestaurantRESToutputDTO> GetRestaurantDetails(int restaurantId)
+        public ActionResult<RestaurantDetailRESToutputDTO> GetRestaurantDetails(int restaurantId)
         {
             try
             {
