@@ -4,16 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RESTaurantBL.Exceptions
-{
-    internal class RestaurantServiceException : Exception
-    {
-        public RestaurantServiceException(string? message) : base(message)
-        {
+namespace RESTaurantBL.Exceptions {
+    internal class RestaurantServiceException : Exception {
+        public RestaurantServiceException(string? message) : base(message) {
         }
 
-        public RestaurantServiceException(string? message, Exception? innerException) : base(message, innerException)
-        {
+        public RestaurantServiceException(string? message, Exception? innerException) : base(message, innerException) {
         }
     }
 }

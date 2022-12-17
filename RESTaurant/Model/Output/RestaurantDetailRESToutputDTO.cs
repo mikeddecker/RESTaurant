@@ -1,4 +1,4 @@
-﻿namespace RESTaurant.Model.Output
+﻿namespace RESTaurantBL.Model.Output
 {
     public class RestaurantDetailRESToutputDTO
     {

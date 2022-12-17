@@ -1,6 +1,6 @@
-﻿using RESTaurant.Model.Output;
+﻿using RESTaurantBL.Model.Output;
 
-namespace RESTaurant.Model.Input {
+namespace RESTaurantBL.Model.Input {
     public class RestaurantRESTinputDTO {
         public string Name { get; set; }
         public string Email { get; set; }

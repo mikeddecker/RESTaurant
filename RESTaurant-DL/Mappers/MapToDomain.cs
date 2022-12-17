@@ -18,7 +18,15 @@ namespace RESTaurantDLEF.Mappers {
                 Restaurant restaurant = new Restaurant(EFr.RestaurantId, EFr.Name, location, EFr.Kitchen, EFr.Email, EFr.Phone);
                 return restaurant;
             } catch (Exception ex) {
-                throw new MapException("MapRestaurant", ex);
+                throw new MapException(nameof(MapRestaurant), ex);
+            }
+        }
+
+        internal static Table MapTable(TableEF tableEFDB) {
+            try {
+                return new Table(tableEFDB.Tablenumber, tableEFDB.Seats);
+            } catch (Exception ex) {
+                throw new MapException(nameof(MapTable), ex);
             }
         }
     }

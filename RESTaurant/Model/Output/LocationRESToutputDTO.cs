@@ -1,4 +1,4 @@
-﻿namespace RESTaurant.Model.Output {
+﻿namespace RESTaurantBL.Model.Output {
     public class LocationRESToutputDTO {
         public LocationRESToutputDTO(int postalCode, string city, string street, string housenumberlabel) {
             PostalCode = postalCode;

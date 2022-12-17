@@ -8,8 +8,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RESTaurantDLEF.Mappers
-{
+namespace RESTaurantDLEF.Mappers {
     internal class MapToDB
     {
         internal static RestaurantEF MapRestaurant(Restaurant restaurant)

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RESTaurant_DL.EFModel {
+namespace RESTaurantDLEF.EFModel {
     [Table("Table")]
     public class TableEF {
         public TableEF()

@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RESTaurant.Exceptions;
-using RESTaurant.Model.Input;
+using RESTaurantBL.Exceptions;
+using RESTaurantBL.Model.Input;
 using RESTaurantBL.Model;
 
-namespace RESTaurant.Mappers {
+namespace RESTaurantBL.Mappers {
     public class MapToDomain {
         internal static Restaurant MapRestaurant(RestaurantRESTinputDTO restaurantRESTinput) {
             try {

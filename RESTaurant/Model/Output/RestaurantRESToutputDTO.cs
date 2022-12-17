@@ -1,4 +1,4 @@
-﻿namespace RESTaurant.Model.Output {
+﻿namespace RESTaurantBL.Model.Output {
     public class RestaurantRESToutputDTO {
         public RestaurantRESToutputDTO(string id, string name, LocationRESToutputDTO location, string kitchen, string email, string phone) {
             Id = id;

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RESTaurant_DL.EFModel;
+using RESTaurantDLEF.EFModel;
 using RESTaurantDLEF.EFModel;
 
 namespace RESTaurantDLEF {

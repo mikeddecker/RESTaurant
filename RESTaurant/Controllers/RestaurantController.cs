@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using RESTaurant.Mappers;
-using RESTaurant.Model.Input;
-using RESTaurant.Model.Output;
+using RESTaurantBL.Mappers;
+using RESTaurantBL.Model.Input;
+using RESTaurantBL.Model.Output;
 using RESTaurantBL.Model;
 using RESTaurantBL.Services;
 using RESTaurantDLEF.EFModel;
 
-namespace RESTaurant.Controllers {
+namespace RESTaurantBL.Controllers {
     [Route("api/[controller]")]
     [ApiController]
     public class RestaurantController : ControllerBase {
@@ -18,6 +18,7 @@ namespace RESTaurant.Controllers {
             this.restaurantService = restaurantService;
         }
 
+        #region RestaurantInfo
         [HttpGet]
         public ActionResult<List<RestaurantRESToutputDTO>> GetRestaurants() {
             try {
@@ -77,29 +78,55 @@ namespace RESTaurant.Controllers {
                 return BadRequest(ex.Message);
             }
         }
-
+        #endregion
+        #region RestaurantDetails
+        [HttpGet("{restaurantId}/Details")]
+        public ActionResult<RestaurantDetailRESToutputDTO> GetRestaurantDetails(int restaurantId) {
+            try {
+                if (restaurantId <= 0) { return BadRequest("Invalid id"); }
+                return Ok(MapToREST.MapRestaurantDetails(hostURL, restaurantId, restaurantService));
+            } catch (Exception ex) {
+                return NotFound(ex.Message);
+            }
+        }
+        #endregion
+        #region Tables
         [HttpPost]
         [Route("{restaurantId}/Table")]
-        public IActionResult AddRestaurantTable(int restaurantId, [FromBody]RestaurantTableRESTinputDTO tableRestInput) {
+        public IActionResult AddRestaurantTable(int restaurantId, [FromBody] RestaurantTableRESTinputDTO tableRESTinput) {
             try {
-                restaurantService.AddTableToRestaurant(restaurantId, tableRestInput.TableNumber, tableRestInput.Seats);
+                restaurantService.AddTableToRestaurant(restaurantId, tableRESTinput.TableNumber, tableRESTinput.Seats);
                 return CreatedAtAction(nameof(GetRestaurantDetails), new { restaurantId = restaurantId }, MapToREST.MapRestaurantDetails(hostURL, restaurantId, restaurantService));
             } catch (Exception ex) {
                 return NotFound(ex.Message);
             }
         }
 
-        [HttpGet("{restaurantId}/Details")]
-        public ActionResult<RestaurantDetailRESToutputDTO> GetRestaurantDetails(int restaurantId)
-        {
-            try
-            {
-                return Ok(MapToREST.MapRestaurantDetails(hostURL, restaurantId, restaurantService)) ;
-            }
-            catch (Exception ex)
-            {
-                return NotFound(ex.Message);
+        [HttpPut]
+        [Route("{restaurantId}/Table")]
+        public IActionResult UpdateTableOfRestaurant(int restaurantId, [FromBody] RestaurantTableRESTinputDTO tableRESTinput) {
+            try {
+                if (restaurantService.DoesExist(restaurantId)) {
+                    restaurantService.UpdateTableOfRestaurant(restaurantId, tableRESTinput.TableNumber, tableRESTinput.Seats);
+                    return CreatedAtAction(nameof(UpdateTableOfRestaurant), new { restaurantId = restaurantId }, MapToREST.MapRestaurantDetails(hostURL, restaurantId, restaurantService));
+                } else {
+                    return NotFound("Restaurant niet gevonden");
+                }
+            } catch (Exception ex) {
+                return BadRequest(ex.Message);
             }
         }
+
+        [HttpDelete("{restaurantId}/Table/{tablenumber}")]
+        public IActionResult DeleteTableRestaurant(int restaurantId, int tablenumber) {
+            try {
+                if (restaurantId <= 0) { return BadRequest("Invalid id"); }
+                restaurantService.DeleteTableOfRestaurant(restaurantId, tablenumber);
+                return NoContent();
+            } catch (Exception ex) {
+                return BadRequest(ex.Message);
+            }
+        }
+        #endregion
     }
 }

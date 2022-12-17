@@ -1,10 +1,10 @@
-﻿using RESTaurant.Exceptions;
-using RESTaurant.Model.Output;
+﻿using RESTaurantBL.Exceptions;
+using RESTaurantBL.Model.Output;
 using RESTaurantBL.Model;
 using RESTaurantBL.Services;
 using RESTaurantDLEF.EFModel;
 
-namespace RESTaurant.Mappers {
+namespace RESTaurantBL.Mappers {
     public class MapToREST {
         internal static List<RestaurantRESToutputDTO> MapToListFromDomain(string hostURL, List<Restaurant> restaurants) {
             return restaurants.Select(r => MapRestaurant(hostURL, r)).ToList();
