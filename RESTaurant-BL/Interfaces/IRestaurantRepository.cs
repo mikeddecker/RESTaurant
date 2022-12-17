@@ -10,10 +10,13 @@ namespace RESTaurantBL.Interfaces {
     {
         Restaurant AddRestaurant(Restaurant restaurant);
         bool DoesExist(Restaurant restaurant);
-        bool DoesExist(int restaurantId);
+        bool DoesRestaurantExist(int restaurantId);
         List<Restaurant> GetRestaurants();
         Restaurant GetRestaurant(int restaurantId);
         Restaurant UpdateRestaurant(Restaurant restaurant);
         void DeleteRestaurant(int restaurantId);
+        bool HasRestaurantTableNumber(int restaurantId, int tableNumber);
+        void AddTableToRestaurant(int restaurantId, int tableNumber, int seats);
+        Dictionary<int, int> GetTablesOfRestaurant(int restaurantId);
     }
 }

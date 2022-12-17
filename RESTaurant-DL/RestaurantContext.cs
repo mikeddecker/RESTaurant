@@ -16,6 +16,8 @@ namespace RESTaurantDLEF {
         }
 
         public DbSet<RestaurantEF> Restaurant { get; set; }
+        public DbSet<TableEF> Table { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
             optionsBuilder.UseSqlServer(_connectionString);
         }

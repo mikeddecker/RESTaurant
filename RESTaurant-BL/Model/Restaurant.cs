@@ -45,6 +45,7 @@ namespace RESTaurantBL.Model {
         public string Email { get => email; private set => SetEmail(value); }
         public string Phone { get => phone; private set => SetPhone(value); }
 
+
         public void SetRestaurantId(int id) {
             if (id <= 0) { throw new RestaurantException("SetRestaurantId - Id smaller than 1"); }
             restaurantId = id;

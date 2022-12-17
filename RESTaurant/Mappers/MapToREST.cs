@@ -1,6 +1,8 @@
 ﻿using RESTaurant.Exceptions;
 using RESTaurant.Model.Output;
 using RESTaurantBL.Model;
+using RESTaurantBL.Services;
+using RESTaurantDLEF.EFModel;
 
 namespace RESTaurant.Mappers {
     public class MapToREST {
@@ -21,6 +23,21 @@ namespace RESTaurant.Mappers {
                 return new LocationRESToutputDTO(location.PostalCode, location.City, location.Street, location.Housenumber);
             } catch (Exception ex) {
                 throw new MapException("MapLocation", ex);
+            }
+        }
+
+        internal static RestaurantDetailRESToutputDTO MapRestaurantDetails(string hostURL, int restaurantId, RestaurantService restaurantService)
+        {
+            try
+            {
+                string restaurantURL = $"{hostURL}/{restaurantId}/Details";
+                Restaurant restaurant = restaurantService.GetRestaurant(restaurantId);
+                return new RestaurantDetailRESToutputDTO(restaurantURL, restaurant.Name, MapLocation(restaurant.Location), restaurant.Kitchen, restaurant.Email, restaurant.Phone,  restaurantService.GetTablesOfRestaurant(restaurantId));
+             
+            }
+            catch (Exception ex)
+            {
+                throw new MapException("MapRestaurant", ex);
             }
         }
     }

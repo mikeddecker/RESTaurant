@@ -88,5 +88,18 @@ namespace RESTaurant.Controllers {
                 return NotFound(ex.Message);
             }
         }
+
+        [HttpGet("{restaurantId}/Details")]
+        public ActionResult<RestaurantRESToutputDTO> GetRestaurantDetails(int restaurantId)
+        {
+            try
+            {
+                return Ok(MapToREST.MapRestaurantDetails(hostURL, restaurantId, restaurantService)) ;
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
     }
 }

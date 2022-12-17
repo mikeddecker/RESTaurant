@@ -10,6 +10,13 @@ using System.Threading.Tasks;
 namespace RESTaurant_DL.EFModel {
     [Table("Table")]
     public class TableEF {
+        public TableEF(int restaurantId, int tableNumber, int seats)
+        {
+            RestaurantId = restaurantId;
+            Tablenumber = tableNumber;
+            Seats = seats;
+        }
+
         [Key]
         public int UnusedFakeTableId { get; set; }
 
