@@ -30,7 +30,7 @@ namespace RESTaurantDLEF {
             modelBuilder.Entity<TableEF>().Property(t => t.IsDeleted).HasDefaultValue(false);
             modelBuilder.Entity<CustomerEF>().Property(c => c.IsDeleted).HasDefaultValue(false);
             //modelBuilder.Entity<LocationEF>().HasData(new LocationEF[] {new (1, 1945, "Lebbeke", null, null) });
-            //modelBuilder.Entity<RestaurantEF>().Property(r => r.Location).HasConversion(l => l.LocationId, l => new LocationEF(l, 1234, "MIGRATION", null, null))
+            //modelBuilder.Entity<RestaurantEF>().Property(r => r.Location).HasConversion(l => l.LocationId, l => new LocationEF(l, 1234, "MIGRATION", null, null)); - reference 3
             //modelBuilder.Entity<RestaurantEF>().Property(r => r.Location).HasDefaultValue(new LocationEF(1,1234, "MIGRATION", null, null));
             //modelBuilder.Entity<CustomerEF>().Property(r => r.Location).HasDefaultValue();
         }
