@@ -14,10 +14,16 @@ namespace RESTaurantBL.Model {
             return false;
         }
 
-        public static bool IsValidPhoneNumberBE(string phoneNumberStringToValidate) {
+        public static bool IsValidPhoneNumberBE(string phoneNumber) {
             var phoneNumberUtil = PhoneNumbers.PhoneNumberUtil.GetInstance();
-            var phoneNumberBE = phoneNumberUtil.Parse(phoneNumberStringToValidate, "BE");
+            var phoneNumberBE = phoneNumberUtil.Parse(phoneNumber, "BE");
             return phoneNumberUtil.IsValidNumber(phoneNumberBE);
+        }
+
+        public static bool IsValidInternationalPhoneNumberOrBEnumber(string phoneNumber) {
+            var phoneNumberUtil = PhoneNumbers.PhoneNumberUtil.GetInstance();
+            var phoneNumberInternational = phoneNumberUtil.Parse(phoneNumber, null); // null --> no region, so international +XXX phone number
+            return phoneNumberUtil.IsValidNumber(phoneNumberInternational);
         }
     }
 }

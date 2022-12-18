@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace RESTaurantDLEF.Mappers {
     internal class MapToDomain {
-        internal static Restaurant MapRestaurant(RestaurantEF EFr) {
+        internal static Restaurant MapRestaurant(RestaurantEF restaurantEF) {
             try {
-                Location location = new Location(EFr.PostalCode, EFr.City);
-                if (!string.IsNullOrWhiteSpace(EFr.Street)) { location.SetStreet(EFr.Street); }
-                if (!string.IsNullOrWhiteSpace(EFr.HousenumberLabel)) { location.SetHousenumber(EFr.HousenumberLabel); }
-                Restaurant restaurant = new Restaurant(EFr.RestaurantId, EFr.Name, location, EFr.Kitchen, EFr.Email, EFr.Phone);
+                Location location = new Location(restaurantEF.Location.PostalCode, restaurantEF.Location.City);
+                if (!string.IsNullOrWhiteSpace(restaurantEF.Location.Street)) { location.SetStreet(restaurantEF.Location.Street); }
+                if (!string.IsNullOrWhiteSpace(restaurantEF.Location.HousenumberLabel)) { location.SetHousenumber(restaurantEF.Location.HousenumberLabel); }
+                Restaurant restaurant = new Restaurant(restaurantEF.RestaurantId, restaurantEF.Name, location, restaurantEF.Kitchen, restaurantEF.Email, restaurantEF.Phone);
                 return restaurant;
             } catch (Exception ex) {
                 throw new MapException(nameof(MapRestaurant), ex);

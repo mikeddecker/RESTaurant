@@ -51,7 +51,7 @@ namespace RESTaurantDLEF.Repositories {
 
         public List<Restaurant> GetRestaurants() {
             try {
-                return ctx.Restaurant.Where(r => r.IsDeleted == false).Select(r => MapToDomain.MapRestaurant(r)).ToList();
+                return ctx.Restaurant.Include(r => r.Location).Where(r => r.IsDeleted == false).Select(r => MapToDomain.MapRestaurant(r)).ToList();
             } catch (Exception ex) {
                 throw new RestaurantRepoException(nameof(GetRestaurants), ex);
             } finally {
@@ -69,7 +69,7 @@ namespace RESTaurantDLEF.Repositories {
 
         public Restaurant GetRestaurant(int restaurantId) {
             try {
-                return MapToDomain.MapRestaurant(ctx.Restaurant.Single(r => r.RestaurantId == restaurantId && r.IsDeleted == false));
+                return MapToDomain.MapRestaurant(ctx.Restaurant.Include(r => r.Location).Single(r => r.RestaurantId == restaurantId && r.IsDeleted == false));
             } catch (Exception ex) {
                 throw new RestaurantRepoException(nameof(GetRestaurant), ex);
             } finally {
@@ -79,15 +79,15 @@ namespace RESTaurantDLEF.Repositories {
 
         public Restaurant UpdateRestaurant(Restaurant restaurant) {
             try {
-                RestaurantEF restaurantEFDB = ctx.Restaurant.Single(r => r.RestaurantId == restaurant.RestaurantId && r.IsDeleted == false);
+                RestaurantEF restaurantEFDB = ctx.Restaurant.Include(r => r.Location).Single(r => r.RestaurantId == restaurant.RestaurantId && r.IsDeleted == false);
                 if (restaurantEFDB.Name != restaurant.Name) { restaurantEFDB.Name = restaurant.Name; }
                 if (restaurantEFDB.Email != restaurant.Email) { restaurantEFDB.Email = restaurant.Email; }
                 if (restaurantEFDB.Phone != restaurant.Phone) { restaurantEFDB.Phone = restaurant.Phone; }
                 if (restaurantEFDB.Kitchen != restaurant.Kitchen) { restaurantEFDB.Kitchen = restaurant.Kitchen; }
-                if (restaurantEFDB.PostalCode != restaurant.Location.PostalCode) { restaurantEFDB.PostalCode = restaurant.Location.PostalCode; }
-                if (restaurantEFDB.City != restaurant.Location.City) { restaurantEFDB.City = restaurant.Location.City; }
-                if (restaurantEFDB.Street != restaurant.Location.Street) { restaurantEFDB.Street = restaurant.Location.Street; }
-                if (restaurantEFDB.HousenumberLabel != restaurant.Location.Housenumber) { restaurantEFDB.HousenumberLabel = restaurant.Location.Housenumber; }
+                if (restaurantEFDB.Location.PostalCode != restaurant.Location.PostalCode) { restaurantEFDB.Location.PostalCode = restaurant.Location.PostalCode; }
+                if (restaurantEFDB.Location.City != restaurant.Location.City) { restaurantEFDB.Location.City = restaurant.Location.City; }
+                if (restaurantEFDB.Location.Street != restaurant.Location.Street) { restaurantEFDB.Location.Street = restaurant.Location.Street; }
+                if (restaurantEFDB.Location.HousenumberLabel != restaurant.Location.Housenumber) { restaurantEFDB.Location.HousenumberLabel = restaurant.Location.Housenumber; }
                 return MapToDomain.MapRestaurant(restaurantEFDB); // SaveAndClear() in finally does the update
             } catch (Exception ex) {
                 throw new RestaurantRepoException(nameof(UpdateRestaurant), ex);
@@ -98,8 +98,9 @@ namespace RESTaurantDLEF.Repositories {
 
         public void DeleteRestaurant(int restaurantId) {
             try {
-                RestaurantEF restaurantEFDB = ctx.Restaurant.Single(r => r.RestaurantId == restaurantId && r.IsDeleted == false);
+                RestaurantEF restaurantEFDB = ctx.Restaurant.Include(r => r.Location).Single(r => r.RestaurantId == restaurantId && r.IsDeleted == false);
                 restaurantEFDB.IsDeleted = true;
+                restaurantEFDB.Location.IsDeleted = true;
             } catch (Exception ex) {
                 throw new RestaurantRepoException(nameof(DeleteRestaurant), ex);
             } finally {

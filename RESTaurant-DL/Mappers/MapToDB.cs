@@ -9,18 +9,25 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RESTaurantDLEF.Mappers {
-    internal class MapToDB
-    {
-        internal static RestaurantEF MapRestaurant(Restaurant restaurant)
-        {
-            try
-            {
-                RestaurantEF restaurantEF = new RestaurantEF(restaurant.Name, restaurant.Kitchen, restaurant.Email, restaurant.Phone, restaurant.Location.PostalCode, restaurant.Location.City);
-                if (!string.IsNullOrWhiteSpace(restaurant.Location.Street)) { restaurantEF.Street = restaurant.Location.Street; }
-                if (!string.IsNullOrWhiteSpace(restaurant.Location.Housenumber)) { restaurantEF.HousenumberLabel = restaurant.Location.Housenumber; }
+    internal class MapToDB {
+        internal static CustomerEF MapCustomer(Customer customer) {
+            throw new NotImplementedException();
+        }
+
+        internal static RestaurantEF MapRestaurant(Restaurant restaurant) {
+            try {
+                RestaurantEF restaurantEF = new RestaurantEF(restaurant.Name, restaurant.Kitchen, restaurant.Email, restaurant.Phone, MapToDB.MapLocation(restaurant.Location));
                 return restaurantEF;
-            } catch (Exception ex)
-            {
+            } catch (Exception ex) {
+                throw new MapException("MapRestaurant", ex);
+            }
+        }
+
+        private static LocationEF MapLocation(Location location) {
+            try {
+                LocationEF locationEF = new LocationEF(location.PostalCode, location.City, location.Street, location.Housenumber);
+                return locationEF;
+            } catch (Exception ex) {
                 throw new MapException("MapRestaurant", ex);
             }
         }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RESTaurantDLEF;
 
@@ -11,9 +12,11 @@ using RESTaurantDLEF;
 namespace RESTaurantDL.Migrations
 {
     [DbContext(typeof(RestaurantContext))]
-    partial class RestaurantContextModelSnapshot : ModelSnapshot
+    [Migration("20221218093921_Customer-Location-Restaurant-12-test")]
+    partial class CustomerLocationRestaurant12test
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,6 +90,15 @@ namespace RESTaurantDL.Migrations
                     b.HasKey("LocationId");
 
                     b.ToTable("Location");
+
+                    b.HasData(
+                        new
+                        {
+                            LocationId = 1,
+                            City = "Lebbeke",
+                            IsDeleted = false,
+                            PostalCode = 1945
+                        });
                 });
 
             modelBuilder.Entity("RESTaurantDLEF.EFModel.RestaurantEF", b =>

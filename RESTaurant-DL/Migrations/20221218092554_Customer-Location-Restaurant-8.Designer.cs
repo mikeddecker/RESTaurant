@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RESTaurantDLEF;
 
@@ -11,9 +12,11 @@ using RESTaurantDLEF;
 namespace RESTaurantDL.Migrations
 {
     [DbContext(typeof(RestaurantContext))]
-    partial class RestaurantContextModelSnapshot : ModelSnapshot
+    [Migration("20221218092554_Customer-Location-Restaurant-8")]
+    partial class CustomerLocationRestaurant8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,6 +90,15 @@ namespace RESTaurantDL.Migrations
                     b.HasKey("LocationId");
 
                     b.ToTable("Location");
+
+                    b.HasData(
+                        new
+                        {
+                            LocationId = 1,
+                            City = "MIGRATION",
+                            IsDeleted = false,
+                            PostalCode = 1234
+                        });
                 });
 
             modelBuilder.Entity("RESTaurantDLEF.EFModel.RestaurantEF", b =>
@@ -111,7 +123,15 @@ namespace RESTaurantDL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<int>("Location")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INT")
+                        .HasDefaultValue(0);
+
                     b.Property<int>("LocationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LocationIdea")
                         .HasColumnType("INT");
 
                     b.Property<string>("Name")
@@ -123,8 +143,6 @@ namespace RESTaurantDL.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.HasKey("RestaurantId");
-
-                    b.HasIndex("LocationId");
 
                     b.ToTable("Restaurant");
                 });
@@ -159,17 +177,6 @@ namespace RESTaurantDL.Migrations
                 });
 
             modelBuilder.Entity("RESTaurantDLEF.EFModel.CustomerEF", b =>
-                {
-                    b.HasOne("RESTaurantDLEF.EFModel.LocationEF", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Location");
-                });
-
-            modelBuilder.Entity("RESTaurantDLEF.EFModel.RestaurantEF", b =>
                 {
                     b.HasOne("RESTaurantDLEF.EFModel.LocationEF", "Location")
                         .WithMany()

@@ -11,33 +11,25 @@ namespace RESTaurantDLEF.EFModel
     [Table("Restaurant")]
     public class RestaurantEF
     {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public RestaurantEF()
         {
         }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public RestaurantEF(string name, string kitchen, string email, string phone, int postalCode, string city)
+        public RestaurantEF(string name, string kitchen, string email, string phone, LocationEF location)
         {
             Name = name;
             Kitchen = kitchen;
             Email = email;
             Phone = phone;
-            PostalCode = postalCode;
-            City = city;
+            Location = location;
         }
 
-        public RestaurantEF(int restaurantId, string name, string kitchen, string email, string phone, int postalCode, string city)
+        public RestaurantEF(int restaurantId, string name, string kitchen, string email, string phone, LocationEF location) : this (name, kitchen, email, phone, location)
         {
             RestaurantId = restaurantId;
-            Name = name;
-            Kitchen = kitchen;
-            Email = email;
-            Phone = phone;
-            PostalCode = postalCode;
-            City = city;
         }
 
         [Key]
+        [Column(TypeName = "INT")]
         public int RestaurantId { get; set; }
 
         [Required]
@@ -56,20 +48,12 @@ namespace RESTaurantDLEF.EFModel
         [Column(TypeName = "nvarchar(20)")]
         public string Phone { get; set; }
 
-        [Required]
-        [Column(TypeName = "INT")]
-        public int PostalCode { get; set; }
 
         [Required]
-        [Column(TypeName = "nvarchar(50)")]
-        public string City { get; set; }
+        [ForeignKey("LocationId")]
+        public LocationEF Location { get; set; }
 
-        [Column(TypeName = "nvarchar(100)")]
-        public string? Street { get; set; }
-
-        [Column(TypeName = "nvarchar(20)")]
-        public string? HousenumberLabel { get; set; }
-
+        [Required]
         [Column(TypeName = "BIT")]
         public bool? IsDeleted { get; set; } = false; // Default value false is set in OnModelCreating
 
