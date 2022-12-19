@@ -10,6 +10,20 @@ using System.Threading.Tasks;
 namespace RESTaurantDLEF.EFModel {
     [Table("Customer")]
     public class CustomerEF {
+        public CustomerEF() {
+        }
+
+        public CustomerEF(string name, string email, string phone, LocationEF location) {
+            Name = name;
+            Email = email;
+            Phone = phone;
+            Location = location;
+        }
+
+        public CustomerEF(int customerId, string name, string email, string phone, LocationEF location) : this(name, email, phone, location) {
+            CustomerId = customerId;
+        }
+
         [Key]
         [Column(TypeName = "INT")]
         public int CustomerId { get; set; }

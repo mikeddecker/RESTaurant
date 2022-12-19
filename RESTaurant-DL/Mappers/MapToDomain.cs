@@ -10,16 +10,29 @@ using System.Threading.Tasks;
 
 namespace RESTaurantDLEF.Mappers {
     internal class MapToDomain {
+        internal static Customer MapCustomer(CustomerEF cEF) {
+            try {
+                Customer customer = new Customer(cEF.CustomerId, cEF.Name, cEF.Email, cEF.Phone, MapLocation(cEF.Location));
+                return customer;
+            } catch (Exception ex) {
+                throw new MapException(nameof(MapCustomer), ex);
+            }
+        }
+
         internal static Restaurant MapRestaurant(RestaurantEF restaurantEF) {
             try {
-                Location location = new Location(restaurantEF.Location.PostalCode, restaurantEF.Location.City);
-                if (!string.IsNullOrWhiteSpace(restaurantEF.Location.Street)) { location.SetStreet(restaurantEF.Location.Street); }
-                if (!string.IsNullOrWhiteSpace(restaurantEF.Location.HousenumberLabel)) { location.SetHousenumber(restaurantEF.Location.HousenumberLabel); }
-                Restaurant restaurant = new Restaurant(restaurantEF.RestaurantId, restaurantEF.Name, location, restaurantEF.Kitchen, restaurantEF.Email, restaurantEF.Phone);
+                Restaurant restaurant = new Restaurant(restaurantEF.RestaurantId, restaurantEF.Name, MapLocation(restaurantEF.Location), restaurantEF.Kitchen, restaurantEF.Email, restaurantEF.Phone);
                 return restaurant;
             } catch (Exception ex) {
                 throw new MapException(nameof(MapRestaurant), ex);
             }
+        }
+
+        private static Location MapLocation(LocationEF locationEF) {
+            Location location = new Location(locationEF.PostalCode, locationEF.City);
+            if (!string.IsNullOrWhiteSpace(locationEF.Street)) { location.SetStreet(locationEF.Street); }
+            if (!string.IsNullOrWhiteSpace(locationEF.HousenumberLabel)) { location.SetHousenumber(locationEF.HousenumberLabel); }
+            return location;
         }
 
         internal static Table MapTable(TableEF tableEFDB) {

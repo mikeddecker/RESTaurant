@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using RESTaurantBL.Mappers;
-using RESTaurantBL.Model.Input;
-using RESTaurantBL.Model.Output;
+using RESTaurant.Mappers;
+using RESTaurant.Model.Input;
+using RESTaurant.Model.Output;
 using RESTaurantBL.Model;
 using RESTaurantBL.Services;
 using RESTaurantDLEF.EFModel;
 
-namespace RESTaurantBL.Controllers {
+namespace RESTaurant.Controllers {
     [Route("api/[controller]")]
     [ApiController]
     public class RestaurantController : ControllerBase {

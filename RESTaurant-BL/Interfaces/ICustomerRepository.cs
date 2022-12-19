@@ -9,5 +9,7 @@ namespace RESTaurantBL.Interfaces {
     public interface ICustomerRepository {
         Customer AddCustomer(Customer customer);
         bool DoesCustomerExist(Customer customer);
+        bool DoesCustomerExist(int customerId);
+        Customer GetCustomer(int customerId);
     }
 }

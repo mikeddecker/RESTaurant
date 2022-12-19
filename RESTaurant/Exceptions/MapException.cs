@@ -1,4 +1,4 @@
-﻿namespace RESTaurantBL.Exceptions {
+﻿namespace RESTaurant.Exceptions {
     public class MapException : Exception {
         public MapException(string? message) : base(message) {
         }

@@ -1,4 +1,4 @@
-﻿namespace RESTaurantBL.Model.Input {
+﻿namespace RESTaurant.Model.Input {
     public class LocationRESTinputDTO {
         public int PostalCode { get; set; }
         public string City { get; set; }

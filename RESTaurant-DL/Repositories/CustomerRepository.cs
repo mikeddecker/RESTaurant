@@ -1,4 +1,6 @@
-﻿using RESTaurantBL.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
+using RESTaurantBL.Interfaces;
 using RESTaurantBL.Model;
 using RESTaurantDLEF;
 using RESTaurantDLEF.EFModel;
@@ -26,7 +28,7 @@ namespace RESTaurantDLEF.Repositories {
         public bool DoesCustomerExist(Customer customer) {
             try {
                 CustomerEF cEF = MapToDB.MapCustomer(customer);
-                return ctx.Customer.Where(c => c.IsDeleted == false).Any(c => c.Email == cEF.Email && c.Name == cEF.Name);
+                return ctx.Customer.Any(c => c.IsDeleted == false && c.Email == cEF.Email && c.Name == cEF.Name);
             } catch (Exception ex) {
                 throw new RestaurantRepoException(nameof(DoesCustomerExist), ex);
             } finally {
@@ -43,8 +45,30 @@ namespace RESTaurantDLEF.Repositories {
                 return c;
             } catch (Exception ex) {
                 throw new CustomerRepoException(nameof(AddCustomer), ex);
+            } finally {
+                SaveAndClear();
             }
         }
 
+        public bool DoesCustomerExist(int customerId) {
+            try {
+                return ctx.Customer.Any(c => c.IsDeleted == false && c.CustomerId == customerId);
+            } catch (Exception ex) {
+                throw new RestaurantRepoException(nameof(DoesCustomerExist), ex);
+            } finally {
+                SaveAndClear();
+            }
+        }
+
+        public Customer GetCustomer(int customerId) {
+            try {
+                CustomerEF cEF = ctx.Customer.Include(c => c.Location).Single(c => c.IsDeleted == false && c.CustomerId == customerId);
+                return MapToDomain.MapCustomer(cEF);
+            } catch (Exception ex) {
+                throw new RestaurantRepoException(nameof(GetCustomer), ex);
+            } finally {
+                SaveAndClear();
+            }
+        }
     }
 }

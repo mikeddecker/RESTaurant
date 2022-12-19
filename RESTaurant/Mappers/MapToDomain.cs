@@ -1,16 +1,26 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RESTaurantBL.Exceptions;
-using RESTaurantBL.Model.Input;
+using RESTaurant.Exceptions;
+using RESTaurant.Model.Input;
 using RESTaurantBL.Model;
+using RESTaurant.Model.Input;
 
-namespace RESTaurantBL.Mappers {
+namespace RESTaurant.Mappers {
     public class MapToDomain {
+        internal static Customer MapCustomer(CustomerRESTinputDTO customerRESTinput) {
+            try {
+                Location location = MapLocation(customerRESTinput.Location);
+                return new Customer(customerRESTinput.Name, customerRESTinput.Email, customerRESTinput.Phone, location);
+            } catch (Exception ex) {
+                throw new MapException(nameof(MapCustomer), ex);
+            }
+        }
+
         internal static Restaurant MapRestaurant(RestaurantRESTinputDTO restaurantRESTinput) {
             try {
                 Location location = MapLocation(restaurantRESTinput.Location);
                 return new Restaurant(restaurantRESTinput.Name, location, restaurantRESTinput.Kitchen.ToLower(), restaurantRESTinput.Email, restaurantRESTinput.Phone);
             } catch (Exception ex) {
-                throw new MapException("MapRestaurant", ex);
+                throw new MapException(nameof(MapRestaurant), ex);
             }
         }
 
@@ -22,7 +32,7 @@ namespace RESTaurantBL.Mappers {
             } catch (MapException) {
                 throw;
             } catch (Exception ex) {
-                throw new MapException("MapRestaurant", ex);
+                throw new MapException(nameof(MapRestaurant), ex);
             }
         }
 
@@ -33,7 +43,7 @@ namespace RESTaurantBL.Mappers {
                 if (!string.IsNullOrWhiteSpace(location.Housenumberlabel) && location.Housenumberlabel.ToLower() != "string") { mappedLocation.SetHousenumber(location.Housenumberlabel); }
                 return mappedLocation;
             } catch (Exception ex) {
-                throw new MapException("MapLocation", ex);
+                throw new MapException(nameof(MapLocation), ex);
             }
         }
     }

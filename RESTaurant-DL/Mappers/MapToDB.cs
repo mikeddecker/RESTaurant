@@ -11,7 +11,12 @@ using System.Threading.Tasks;
 namespace RESTaurantDLEF.Mappers {
     internal class MapToDB {
         internal static CustomerEF MapCustomer(Customer customer) {
-            throw new NotImplementedException();
+            try {
+                CustomerEF customerEF = new CustomerEF(customer.Name, customer.Email, customer.PhoneNumber, MapLocation(customer.Location));
+                return customerEF;
+            } catch (Exception ex) {
+                throw new MapException(nameof(MapCustomer), ex);
+            }
         }
 
         internal static RestaurantEF MapRestaurant(Restaurant restaurant) {

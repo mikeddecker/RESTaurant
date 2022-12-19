@@ -14,7 +14,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IRestaurantRepository>(r => new RestaurantRepository(connectionstring));
+builder.Services.AddSingleton<ICustomerRepository>(c => new CustomerRepository(connectionstring));
 builder.Services.AddSingleton<RestaurantService>();
+builder.Services.AddSingleton<CustomerService>();
 
 var app = builder.Build();
 
