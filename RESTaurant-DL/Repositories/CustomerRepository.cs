@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.Identity.Client;
 using RESTaurantBL.Interfaces;
 using RESTaurantBL.Model;
 using RESTaurantDLEF;
@@ -25,6 +26,7 @@ namespace RESTaurantDLEF.Repositories {
             ctx.SaveChanges();
             ctx.ChangeTracker.Clear();
         }
+
         public bool DoesCustomerExist(Customer customer) {
             try {
                 CustomerEF cEF = MapToDB.MapCustomer(customer);
@@ -94,6 +96,19 @@ namespace RESTaurantDLEF.Repositories {
                 return customer; // Updating will be done in finally part - SaveAndClear()
             } catch (Exception ex) {
                 throw new CustomerRepoException(nameof(UpdateCustomer), ex);
+            } finally {
+                SaveAndClear();
+            }
+        }
+
+        public void DeleteCustomer(int customerId) {
+            try {
+                CustomerEF customerEF = ctx.Customer.Include(c => c.Location).Single(c => c.IsDeleted == false && c.CustomerId == customerId);
+                customerEF.IsDeleted = true;
+                customerEF.Location.IsDeleted = true;
+                // Updating will be done in finally part - SaveAndClear()
+            } catch (Exception ex) {
+                throw new RestaurantRepoException(nameof(GetCustomer), ex);
             } finally {
                 SaveAndClear();
             }

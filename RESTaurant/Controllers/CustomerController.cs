@@ -60,6 +60,16 @@ namespace RESTaurant.Controllers {
             }
         }
 
+        [HttpDelete("Goodbye/{customerId}")]
+        public ActionResult<CustomerRESToutputDTO> DeleteCustomer(int customerId) {
+            try {
+                if (customerId <= 0) { return BadRequest($"{nameof(DeleteCustomer)} - Invalid customerId"); }
+                _customerService.DeleteCustomer(customerId);
+                return NoContent();
+            } catch (Exception ex) {
+                return BadRequest($"{nameof(UpdateCustomer)} - {ex.Message}");
+            }
+        }
         #endregion
     }
 }
