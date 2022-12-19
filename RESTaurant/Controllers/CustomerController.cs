@@ -34,19 +34,29 @@ namespace RESTaurant.Controllers {
             try {
                 if (customerId <= 0) { return BadRequest($"{nameof(GetCustomer)} - Invalid CustomerId"); }
                 if (!_customerService.DoesCustomerExist(customerId)) { return NotFound($"{nameof(GetCustomer)} - Customer does not exist"); }
-                return Ok(_customerService.GetCustomer(customerId));
+                return Ok(MapToREST.MapCustomer(hostURL,_customerService.GetCustomer(customerId)));
             } catch (Exception ex) {
                 return BadRequest($"{nameof(GetCustomer)} - {ex.Message}");
             }
         }
 
         [HttpPost]
-        public ActionResult<CustomerRESToutputDTO> AddCustomer([FromBody]CustomerRESTinputDTO customerRESTinput) {
+        public ActionResult<CustomerRESToutputDTO> AddCustomer([FromBody] CustomerRESTinputDTO customerRESTinput) {
             try {
                 Customer customer = _customerService.AddCustomer(MapToDomain.MapCustomer(customerRESTinput));
                 return CreatedAtAction(nameof(AddCustomer), new { customerId = customer.CustomerId }, MapToREST.MapCustomer(hostURL, customer));
             } catch (Exception ex) {
                 return BadRequest($"{nameof(AddCustomer)} - {ex.Message}");
+            }
+        }
+
+        [HttpPut("{customerId}")]
+        public ActionResult<CustomerRESToutputDTO> UpdateCustomer(int customerId, [FromBody] CustomerRESTinputDTO customerRESTinput) {
+            try {
+                Customer customer = _customerService.UpdateCustomer(MapToDomain.MapCustomer(customerId, customerRESTinput));
+                return CreatedAtAction(nameof(UpdateCustomer), new { customerId = customer.CustomerId }, MapToREST.MapCustomer(hostURL, customer));
+            } catch (Exception ex) {
+                return BadRequest($"{nameof(UpdateCustomer)} - {ex.Message}");
             }
         }
 

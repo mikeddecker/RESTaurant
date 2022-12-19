@@ -12,5 +12,6 @@ namespace RESTaurantBL.Interfaces {
         bool DoesCustomerExist(int customerId);
         Customer GetCustomer(int customerId);
         List<Customer> GetCustomers();
+        Customer UpdateCustomer(Customer customer);
     }
 }

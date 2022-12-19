@@ -15,6 +15,18 @@ namespace RESTaurant.Mappers {
             }
         }
 
+        internal static Customer MapCustomer(int customerId, CustomerRESTinputDTO customerRESTinput) {
+            try {
+                Customer c = MapCustomer(customerRESTinput);
+                c.SetCustomerId(customerId);
+                return c;
+            } catch (MapException) {
+                throw;
+            } catch (Exception ex) {
+                throw new MapException(nameof(MapCustomer), ex);
+            }
+        }
+
         internal static Restaurant MapRestaurant(RestaurantRESTinputDTO restaurantRESTinput) {
             try {
                 Location location = MapLocation(restaurantRESTinput.Location);

@@ -65,5 +65,13 @@ namespace RESTaurantBL.Model {
         public override int GetHashCode() {
             return HashCode.Combine(_customerId);
         }
+
+        internal bool HasTheSameProperties(Customer customer) {
+            return CustomerId == customer.CustomerId &&
+                   Name == customer.Name &&
+                   Email == customer.Email &&
+                   PhoneNumber == customer.PhoneNumber &&
+                   Location.Equals(customer.Location);
+        }
     }
 }

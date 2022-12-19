@@ -84,7 +84,7 @@ namespace RESTaurantBL.Model {
         public bool HasTheSameProperties(Restaurant restaurant) {
             return RestaurantId == restaurant.RestaurantId &&
                    Name == restaurant.Name &&
-                   EqualityComparer<Location>.Default.Equals(Location, restaurant.Location) &&
+                   Location.Equals(restaurant.Location) &&
                    Kitchen == restaurant.Kitchen &&
                    Email == restaurant.Email &&
                    Phone == restaurant.Phone;

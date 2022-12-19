@@ -88,7 +88,7 @@ namespace RESTaurantDLEF.Repositories {
                 if (restaurantEFDB.Location.City != restaurant.Location.City) { restaurantEFDB.Location.City = restaurant.Location.City; }
                 if (restaurantEFDB.Location.Street != restaurant.Location.Street) { restaurantEFDB.Location.Street = restaurant.Location.Street; }
                 if (restaurantEFDB.Location.HousenumberLabel != restaurant.Location.Housenumber) { restaurantEFDB.Location.HousenumberLabel = restaurant.Location.Housenumber; }
-                return MapToDomain.MapRestaurant(restaurantEFDB); // SaveAndClear() in finally does the update
+                return restaurant; // SaveAndClear() in finally does the update
             } catch (Exception ex) {
                 throw new RestaurantRepoException(nameof(UpdateRestaurant), ex);
             } finally {

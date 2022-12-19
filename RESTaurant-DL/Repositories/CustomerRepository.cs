@@ -80,5 +80,23 @@ namespace RESTaurantDLEF.Repositories {
                 SaveAndClear();
             }
         }
+
+        public Customer UpdateCustomer(Customer customer) {
+            try {
+                CustomerEF customerEFDB = ctx.Customer.Include(c => c.Location).Single(c => c.CustomerId == customer.CustomerId);
+                if (customerEFDB.Name != customer.Name) { customerEFDB.Name = customer.Name; }
+                if (customerEFDB.Email != customer.Email) { customerEFDB.Email = customer.Email; }
+                if (customerEFDB.Phone != customer.PhoneNumber) { customerEFDB.Phone = customer.PhoneNumber; }
+                if (customerEFDB.Location.PostalCode != customer.Location.PostalCode) { customerEFDB.Location.PostalCode = customer.Location.PostalCode; }
+                if (customerEFDB.Location.City != customer.Location.City) { customerEFDB.Location.City = customer.Location.City; }
+                if (customerEFDB.Location.Street != customer.Location.Street) { customerEFDB.Location.Street = customer.Location.Street; }
+                if (customerEFDB.Location.HousenumberLabel != customer.Location.Housenumber) { customerEFDB.Location.HousenumberLabel = customer.Location.Housenumber; }
+                return customer; // Updating will be done in finally part - SaveAndClear()
+            } catch (Exception ex) {
+                throw new CustomerRepoException(nameof(UpdateCustomer), ex);
+            } finally {
+                SaveAndClear();
+            }
+        }
     }
 }

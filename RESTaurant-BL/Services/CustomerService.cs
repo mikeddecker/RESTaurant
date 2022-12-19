@@ -59,5 +59,18 @@ namespace RESTaurantBL.Services {
                 throw new CustomerServiceException(nameof(GetCustomers), ex);
             }
         }
+
+        public Customer UpdateCustomer(Customer customer) {
+            try {
+                if (customer == null) { throw new CustomerServiceException($"{nameof(UpdateCustomer)} - Customer is null"); }
+                if (!_customerRepo.DoesCustomerExist(customer.CustomerId)) { throw new CustomerServiceException($"{nameof(UpdateCustomer)} - Customer does not exists"); }
+                if (_customerRepo.GetCustomer(customer.CustomerId).HasTheSameProperties(customer)) { throw new CustomerServiceException($"{nameof(UpdateCustomer)} - Customer has not changed"); }
+                return _customerRepo.UpdateCustomer(customer);
+            } catch (CustomerServiceException) {
+                throw;
+            } catch (Exception ex) {
+                throw new CustomerServiceException(nameof(GetCustomers), ex);
+            }
+        }
     }
 }

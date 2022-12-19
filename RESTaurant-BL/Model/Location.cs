@@ -52,6 +52,17 @@ namespace RESTaurantBL.Model {
             this.housenumber = housenumber.Trim().ToLower();
         }
 
+        public override bool Equals(object? obj) {
+            return obj is Location location &&
+                   PostalCode == location.PostalCode &&
+                   City == location.City &&
+                   Street == location.Street &&
+                   Housenumber == location.Housenumber;
+        }
+
+        public override int GetHashCode() {
+            return HashCode.Combine(PostalCode, City, Street, Housenumber);
+        }
     }
 }
 
