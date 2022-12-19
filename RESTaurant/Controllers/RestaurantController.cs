@@ -23,7 +23,7 @@ namespace RESTaurant.Controllers {
         public ActionResult<List<RestaurantRESToutputDTO>> GetRestaurants() {
             try {
                 List<Restaurant> restaurants = restaurantService.GetRestaurants();
-                List<RestaurantRESToutputDTO> restaurantListRESToutputs = MapToREST.MapToListFromDomain(hostURL, restaurants);
+                List<RestaurantRESToutputDTO> restaurantListRESToutputs = MapToREST.MapRestaurantList(hostURL, restaurants);
                 return Ok(restaurantListRESToutputs);
             } catch (Exception ex) {
                 return NotFound(ex.Message);

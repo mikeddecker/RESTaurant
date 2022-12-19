@@ -70,5 +70,15 @@ namespace RESTaurantDLEF.Repositories {
                 SaveAndClear();
             }
         }
+
+        public List<Customer> GetCustomers() {
+            try {
+                return ctx.Customer.Include(c => c.Location).Where(c => c.IsDeleted == false).Select(cEF => MapToDomain.MapCustomer(cEF)).ToList();
+            } catch (Exception ex) {
+                throw new RestaurantRepoException(nameof(GetCustomer), ex);
+            } finally {
+                SaveAndClear();
+            }
+        }
     }
 }

@@ -18,6 +18,17 @@ namespace RESTaurant.Controllers {
         }
 
         #region Customer
+        [HttpGet]
+        public ActionResult<List<CustomerRESToutputDTO>> GetCustomers() {
+            try {
+                List<Customer> customers = _customerService.GetCustomers();
+                List<CustomerRESToutputDTO> customersDTO = MapToREST.MapCustomerList(hostURL, customers);
+                return Ok(customersDTO);
+            } catch (Exception ex) {
+                return NotFound($"{nameof(GetCustomers)} - {ex.Message}");
+            }
+        }
+
         [HttpGet("{customerId}")]
         public ActionResult<CustomerRESToutputDTO> GetCustomer(int customerId) {
             try {
@@ -30,9 +41,9 @@ namespace RESTaurant.Controllers {
         }
 
         [HttpPost]
-        public ActionResult<CustomerRESToutputDTO> AddCustomer([FromBody]CustomerRESTinputDTO customerInput) {
+        public ActionResult<CustomerRESToutputDTO> AddCustomer([FromBody]CustomerRESTinputDTO customerRESTinput) {
             try {
-                Customer customer = _customerService.AddCustomer(MapToDomain.MapCustomer(customerInput));
+                Customer customer = _customerService.AddCustomer(MapToDomain.MapCustomer(customerRESTinput));
                 return CreatedAtAction(nameof(AddCustomer), new { customerId = customer.CustomerId }, MapToREST.MapCustomer(hostURL, customer));
             } catch (Exception ex) {
                 return BadRequest($"{nameof(AddCustomer)} - {ex.Message}");

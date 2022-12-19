@@ -5,7 +5,7 @@ using RESTaurantBL.Services;
 
 namespace RESTaurant.Mappers {
     public class MapToREST {
-        internal static List<RestaurantRESToutputDTO> MapToListFromDomain(string hostURL, List<Restaurant> restaurants) {
+        internal static List<RestaurantRESToutputDTO> MapRestaurantList(string hostURL, List<Restaurant> restaurants) {
             return restaurants.Select(r => MapRestaurant(hostURL, r)).ToList();
         }
         internal static RestaurantRESToutputDTO MapRestaurant(string hostURL, Restaurant restaurant) {
@@ -42,6 +42,14 @@ namespace RESTaurant.Mappers {
                 return new CustomerRESToutputDTO(customerURL, customer.Name, customer.Email, customer.PhoneNumber, MapLocation(customer.Location));
             } catch (Exception ex) {
                 throw new MapException(nameof(MapCustomer), ex);
+            }
+        }
+
+        internal static List<CustomerRESToutputDTO> MapCustomerList(string hostURL, List<Customer> customers) {
+            try {
+                return customers.Select(c => MapCustomer(hostURL, c)).ToList();
+            } catch (Exception ex) {
+                throw new MapException($"{nameof(MapCustomerList)} - {ex.Message}");
             }
         }
     }

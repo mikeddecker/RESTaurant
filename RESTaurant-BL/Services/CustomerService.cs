@@ -49,5 +49,15 @@ namespace RESTaurantBL.Services {
                 throw new CustomerServiceException(nameof(GetCustomer), ex);
             }
         }
+
+        public List<Customer> GetCustomers() {
+            try {
+                return _customerRepo.GetCustomers();
+            } catch (CustomerServiceException) {
+                throw;
+            } catch (Exception ex) {
+                throw new CustomerServiceException(nameof(GetCustomers), ex);
+            }
+        }
     }
 }
