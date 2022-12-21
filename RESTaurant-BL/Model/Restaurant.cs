@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace RESTaurantBL.Model {
     public class Restaurant {
-        private string name;
-        private int restaurantId;
-        private Location location;
-        private string kitchen;
-        private string email;
-        private string phone;
-        private List<Reservation> reservations;
+        private string _name;
+        private int _restaurantId;
+        private Location _location;
+        private string _kitchen;
+        private string _email;
+        private string _phone;
+        private List<Reservation> _reservations;
 
 
 
@@ -39,46 +39,46 @@ namespace RESTaurantBL.Model {
         }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-        public int RestaurantId { get => restaurantId; private set => SetRestaurantId(value); }
-        public string Name { get => name; private set => SetName(value); }
-        public Location Location { get => location; private set => SetLocation(value); }
-        public string Kitchen { get => kitchen; private set => SetKitchen(value); }
-        public string Email { get => email; private set => SetEmail(value); }
-        public string Phone { get => phone; private set => SetPhone(value); }
+        public int RestaurantId { get => _restaurantId; private set => SetRestaurantId(value); }
+        public string Name { get => _name; private set => SetName(value); }
+        public Location Location { get => _location; private set => SetLocation(value); }
+        public string Kitchen { get => _kitchen; private set => SetKitchen(value); }
+        public string Email { get => _email; private set => SetEmail(value); }
+        public string Phone { get => _phone; private set => SetPhone(value); }
 
         public Dictionary<int, int> Tables { get; set; } // Tablenumber - Seats
-        public List<Reservation> Reservations { get => reservations; private set => reservations = value; }
+        public List<Reservation> Reservations { get => _reservations; private set => _reservations = value; }
 
         public void SetRestaurantId(int id) {
             if (id <= 0) { throw new RestaurantException("SetRestaurantId - Id smaller than 1"); }
-            restaurantId = id;
+            _restaurantId = id;
         }
         public void SetName(string name) {
             if (string.IsNullOrWhiteSpace(name)) { throw new RestaurantException("SetName - No name filled in"); }
-            this.name = name.Trim();
+            this._name = name.Trim();
         }
         public void SetLocation(Location location) {
             if (location == null) { throw new RestaurantException("SetLocation - Location is null"); }
-            this.location = location;
+            this._location = location;
         }
         public void SetKitchen(string kitchentype) {
             if (string.IsNullOrWhiteSpace(kitchentype)) { throw new RestaurantException("SetKitchen - No kitchentype filled in"); }
             kitchentype = kitchentype.Trim();
             if (!RestaurantService.GetKitchenTypes().Contains(kitchentype)) { throw new RestaurantException("SetKitchen - Kitchentype not recognized"); }
-            kitchen = kitchentype;
+            _kitchen = kitchentype;
         }
         public void SetEmail(string email) {
             if (string.IsNullOrWhiteSpace(email)) { throw new RestaurantException("SetEmail - No email filled in"); }
             email = email.ToLower().Trim();
             if (!Verify.IsValidEmailSyntax(email)) { throw new RestaurantException("SetEmail - Invalid email"); }
-            this.email = email;
+            this._email = email;
 
         }
         public void SetPhone(string phone) {
             if (string.IsNullOrWhiteSpace(phone)) { throw new RestaurantException("SetPhone - No phone filled in"); }
             phone = phone.Trim();
             if (!Verify.IsValidPhoneNumberBE(phone)) { throw new RestaurantException("SetPhone - Phone is not a valid BE number"); }
-            this.phone = phone;
+            this._phone = phone;
         }
 
         public bool HasTheSameProperties(Restaurant restaurant) {
@@ -96,7 +96,27 @@ namespace RESTaurantBL.Model {
 
         public override bool Equals(object? obj) {
             return obj is Restaurant restaurant &&
-                   restaurantId == restaurant.restaurantId;
+                   _restaurantId == restaurant._restaurantId;
+        }
+
+        internal void AddReservation(Reservation reservation) {
+            if (reservation == null) { throw new RestaurantException("Reservation is null"); }
+            if (reservation.ReservationId == 0) { throw new RestaurantException("Reservation has no idea"); }
+
+            if (reservation.Restaurant != null && reservation.Restaurant != this) {
+
+            }
+
+            // Adding reservation
+            if (_reservations.Contains(reservation)) {
+                throw new RestaurantException($"{nameof(AddReservation)} - Restaurant already contains reservation");
+            } else {
+                _reservations.Add(reservation);
+                if (!reservation.Restaurant.Equals(this)) { reservation.SetRestaurant(this); }
+            }
+
+
+            
         }
     }
 }

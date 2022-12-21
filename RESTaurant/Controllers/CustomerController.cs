@@ -71,5 +71,8 @@ namespace RESTaurant.Controllers {
             }
         }
         #endregion
+        #region Reservation
+
+        #endregion
     }
 }

@@ -33,6 +33,8 @@ namespace RESTaurantBL.Model {
         public string PhoneNumber { get => _phoneNumber; set => SetPhoneNumber(value); }
         public Location Location { get => _location; set => SetLocation(value); }
 
+        public List<Reservation> Reservations { get; set; }
+
         public void SetCustomerId(int id) {
             if (id <= 0) { throw new CustomerException($"{nameof(SetCustomerId)} - Invalid customerId"); }
             _customerId = id;
