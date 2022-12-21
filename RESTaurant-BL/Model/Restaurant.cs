@@ -15,7 +15,7 @@ namespace RESTaurantBL.Model {
         private string _kitchen;
         private string _email;
         private string _phone;
-        private List<Reservation> _reservations;
+        private List<Reservation> _reservations = new List<Reservation>();
 
 
 
@@ -100,23 +100,29 @@ namespace RESTaurantBL.Model {
         }
 
         internal void AddReservation(Reservation reservation) {
+            // Internal method since we will not acces it directly, but always from Reservation
             if (reservation == null) { throw new RestaurantException("Reservation is null"); }
             if (reservation.ReservationId == 0) { throw new RestaurantException("Reservation has no idea"); }
-
-            if (reservation.Restaurant != null && reservation.Restaurant != this) {
-
-            }
 
             // Adding reservation
             if (_reservations.Contains(reservation)) {
                 throw new RestaurantException($"{nameof(AddReservation)} - Restaurant already contains reservation");
             } else {
-                _reservations.Add(reservation);
-                if (!reservation.Restaurant.Equals(this)) { reservation.SetRestaurant(this); }
+                // Checking if restaurant of reservation is already filled in
+                if (reservation.Restaurant != null) {
+                    if (!reservation.Restaurant.Equals(this)) {
+                        // reservation has another restaurant
+                        throw new ReservationException($"{nameof(AddReservation)} - Restaurant of reservation is not the same");
+                    } else {
+                        _reservations.Add(reservation);
+                    }
+                } else {
+                    // Reservation is made first, so we shouldn't come across this path
+                    //_reservations.Add(reservation);
+                    //reservation.SetRestaurant(this);
+                }
             }
 
-
-            
         }
     }
 }
