@@ -59,5 +59,7 @@ namespace RESTaurantDLEF.EFModel
 
         [ForeignKey("RestaurantId")]
         public ICollection<TableEF> Tables { get; set; }
+
+        public List<ReservationEF> Reservations { get; set; }
     }
 }

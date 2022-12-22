@@ -13,9 +13,12 @@ degroeneWandeling.SetRestaurantId(2);
 Customer mike = new Customer("Mike", "m@dd.be", "+32478090859", new Location(9255, "Buggenhout"));
 mike.SetCustomerId(1);
 
-// Reservations
-Reservation reservation1 = new Reservation(1, cartoon, mike);
-Reservation reservation2 = new Reservation(2, degroeneWandeling, mike);
+// Tables
+Table cartoontafel1 = new Table(1, 3);
+Table cartoontafel2 = new Table(2, 3);
 
-Console.WriteLine(cartoon.Reservations);
-Console.WriteLine(mike.Reservations);
+// Reservations
+//Reservation reservation1 = new Reservation(1, cartoon, mike, cartoontafel1, 2, new DateTime(), new TimeOnly(18,30), false);
+//Reservation reservation2 = new Reservation(2, cartoon, mike, cartoontafel2, 2, DateOnly.FromDateTime(DateTime.Today.AddDays(1)), new TimeOnly(18,30), false);
+//Reservation reservationWithoutId1 = new Reservation(degroeneWandeling, mike, cartoontafel2, 2, DateOnly.FromDateTime(DateTime.Today.AddDays(2)), new TimeOnly(18, 30));
+//Reservation reservationWithoutId2 = new Reservation(cartoon, mike, cartoontafel2, 2, DateOnly.FromDateTime(DateTime.Today.AddDays(2)), new TimeOnly(18, 30));

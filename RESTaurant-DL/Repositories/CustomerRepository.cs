@@ -64,7 +64,7 @@ namespace RESTaurantDLEF.Repositories {
 
         public Customer GetCustomer(int customerId) {
             try {
-                CustomerEF cEF = ctx.Customer.Include(c => c.Location).Single(c => c.IsDeleted == false && c.CustomerId == customerId);
+                CustomerEF cEF = ctx.Customer.Include(c => c.Location).Include(c => c.Reservations).Single(c => c.IsDeleted == false && c.CustomerId == customerId);
                 return MapToDomain.MapCustomer(cEF);
             } catch (Exception ex) {
                 throw new RestaurantRepoException(nameof(GetCustomer), ex);

@@ -14,6 +14,7 @@ namespace RESTaurantDLEF.EFModel {
         {
         }
 
+        // TODO update so TableEF contains RestaurantEF
         public TableEF(int restaurantId, int tableNumber, int seats)
         {
             RestaurantId = restaurantId;

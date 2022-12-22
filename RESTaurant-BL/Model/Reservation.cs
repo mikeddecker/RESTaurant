@@ -11,15 +11,21 @@ namespace RESTaurantBL.Model {
         private Restaurant _restaurant;
         private Customer _customer;
         private int _seats;
-        private DateOnly _date;
-        private TimeOnly _time;
+        private DateTime _date;
         private Table _table;
-        private bool _isCanceled;
+        private bool _isCanceled = false;
 
-        public Reservation(int reservationId, Restaurant restaurant, Customer customer) {
-            SetReservationId(reservationId);
+        public Reservation(Restaurant restaurant, Customer customer, Table table, int seats, DateTime date) {
+            SetDate(date);
+            SetTable(table);
+            SetSeats(seats);
             SetRestaurant(restaurant);
             SetCustomer(customer);
+        }
+
+        public Reservation(int reservationId, Restaurant restaurant, Customer customer, Table table, int seats, DateTime date, bool isCanceled) : this(restaurant, customer, table, seats, date) {
+            SetReservationId(reservationId);
+            if (isCanceled) { SetIsCanceled(isCanceled); }
         }
 
         public int ReservationId { get => _reservationId; set => SetReservationId(value); }
@@ -27,9 +33,8 @@ namespace RESTaurantBL.Model {
         public Customer Customer { get => _customer; set => SetCustomer(value); }
         public Table Table { get => _table; set => SetTable(value); }
         public int Seats { get => _seats; set => SetSeats(value); }
-        public DateOnly Date { get => _date; set => _date = value; }
-        public TimeOnly Time { get => _time; set => _time = value; }
-        public bool IsCanceled { get => _isCanceled; private set => _isCanceled = value; }
+        public DateTime Date { get => _date; set => SetDate(value); }
+        public bool IsCanceled { get => _isCanceled; private set => SetIsCanceled(value); }
 
         public override bool Equals(object? obj) {
             return obj is Reservation reservation &&
@@ -52,13 +57,6 @@ namespace RESTaurantBL.Model {
             // Restaurant can't be another, since we can only call this method privately and we use it in the constructor, so _restaurant should be null
             // If customer is wrong and chose the wrong restaurant, we cancel or remove this one and make another.
             _restaurant = restaurant;
-
-            // Adding reservation to restaurant
-            if (!restaurant.Reservations.Contains(this)) {
-                restaurant.AddReservation(this);
-            } else {
-                // This method is called from the Restaurant, but a reservation should have a restaurant by default in the constructor 
-            }
         }
 
         private void SetCustomer(Customer customer) {
@@ -67,13 +65,6 @@ namespace RESTaurantBL.Model {
 
             // Customer is customer, we can't change it.
             _customer = customer;
-
-            // Adding reservation to customer
-            if (!customer.Reservations.Contains(this)) {
-                customer.AddReservation(this);
-            } else {
-                // We initiat the customer from within this constructor, so we do not require an else path.
-            }
         }
 
         internal void SetTable(Table table) {
@@ -86,13 +77,18 @@ namespace RESTaurantBL.Model {
             _seats = amount;
         }
 
-        public void SetDate(DateOnly date) {
+        public void SetDate(DateTime date) {
             if (date.GetHashCode() == 0) { throw new ReservationException($"{nameof(SetDate)} - Date not initialized"); }
 
-            // New reservations must be today or in the future
-            if (_reservationId == 0 && DateOnly.FromDateTime(DateTime.Today) <= date) {
-                _date = date;
-            }
+            // New reservations must be today or in the future, old reservations can be in the past
+            if (_reservationId == 0 && DateTime.Now > date) { throw new ReservationException($"{nameof(SetDate)} - New reservations must be in the future"); }
+            _date = date;
         }
+
+        private void SetIsCanceled(bool canceled) {
+            if (canceled == _isCanceled) throw new ReservationException($"{nameof(SetIsCanceled)} - IsCanceled is the same");
+            _isCanceled = canceled;
+        }
+
     }
 }

@@ -125,7 +125,7 @@ namespace RESTaurantBL.Services {
             } catch (Exception ex) {
                 throw new RestaurantServiceException(nameof(HasRestaurantTableNumber), ex);
             }
-        } // TODO : check of de method niet verwijderd mag worden
+        }
 
         public void DeleteTableOfRestaurant(int restaurantId, int tablenumber) {
             try {
@@ -150,6 +150,18 @@ namespace RESTaurantBL.Services {
                 throw;
             } catch (Exception ex) {
                 throw new RestaurantServiceException(nameof(UpdateTableOfRestaurant), ex);
+            }
+        }
+
+        public Table GetRestaurantTable(int restaurantId, int tablenumber) {
+            try {
+                if (!_restaurantRepo.DoesRestaurantExist(restaurantId)) { throw new RestaurantServiceException($"{nameof(HasRestaurantTableNumber)} - RestaurantIdea does not exist"); }
+                if (!_restaurantRepo.DoesRestaurantExist(tablenumber)) { throw new RestaurantServiceException($"{nameof(HasRestaurantTableNumber)} - Restaurant with id {restaurantId} does not have tablenumber {tablenumber}"); }
+                return _restaurantRepo.GetTableOfRestaurant(restaurantId, tablenumber);
+            } catch (RestaurantServiceException) {
+                throw;
+            } catch (Exception ex) {
+                throw new RestaurantServiceException(nameof(HasRestaurantTableNumber), ex);
             }
         }
     }

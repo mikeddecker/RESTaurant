@@ -3,6 +3,7 @@ using RESTaurant.Exceptions;
 using RESTaurant.Model.Input;
 using RESTaurantBL.Model;
 using RESTaurant.Model.Input;
+using RESTaurantBL.Services;
 
 namespace RESTaurant.Mappers {
     public class MapToDomain {
@@ -24,6 +25,29 @@ namespace RESTaurant.Mappers {
                 throw;
             } catch (Exception ex) {
                 throw new MapException(nameof(MapCustomer), ex);
+            }
+        }
+
+        internal static Reservation MapReservation(ReservationRESTinputDTO reservationRESTinput, CustomerService customerService, RestaurantService restaurantService) {
+            try {
+                // Existential checks & getting the other data
+                if (reservationRESTinput == null) { throw new MapException($"{nameof(MapReservation)} - Reservation is null"); }
+                if (reservationRESTinput.RestaurantId <= 0) { throw new MapException($"{nameof(MapReservation)} - Invalid RestaurantId"); }
+                if (reservationRESTinput.CustomerId <= 0) { throw new MapException($"{nameof(MapReservation)} - Invalid CustomerId"); }
+                Restaurant restaurant = restaurantService.GetRestaurant(reservationRESTinput.RestaurantId);
+                Customer customer = customerService.GetCustomer(reservationRESTinput.CustomerId);
+                if (!restaurantService.HasRestaurantTableNumber(reservationRESTinput.RestaurantId, reservationRESTinput.Tablenumber)) { throw new MapException($"{nameof(MapReservation)} - Restaurant {restaurant.Name} does not contain a tablenumber {reservationRESTinput.Tablenumber}"); }
+                Table table = restaurantService.GetRestaurantTable(restaurant.RestaurantId, reservationRESTinput.Tablenumber);
+
+                DateTime date = new DateTime(reservationRESTinput.Date.Year, reservationRESTinput.Date.Month, reservationRESTinput.Date.Day, reservationRESTinput.Date.Hour, reservationRESTinput.Date.Minute, 0);
+
+                // Creating the reservation
+               Reservation reservation = new Reservation(restaurant, customer, table, reservationRESTinput.Seats,date);
+                return reservation;
+            } catch (MapException) {
+                throw;
+            } catch (Exception ex) {
+                throw new MapException(nameof(MapReservation), ex);
             }
         }
 

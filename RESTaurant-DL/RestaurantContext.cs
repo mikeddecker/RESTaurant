@@ -20,6 +20,8 @@ namespace RESTaurantDLEF {
         public DbSet<CustomerEF> Customer { get; set; }
         public DbSet<LocationEF> Location { get; set; }
 
+        public DbSet<ReservationEF> Reservation { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
             optionsBuilder.UseSqlServer(_connectionString);
         }
@@ -29,6 +31,15 @@ namespace RESTaurantDLEF {
             modelBuilder.Entity<LocationEF>().Property(l => l.IsDeleted).HasDefaultValue(false);
             modelBuilder.Entity<TableEF>().Property(t => t.IsDeleted).HasDefaultValue(false);
             modelBuilder.Entity<CustomerEF>().Property(c => c.IsDeleted).HasDefaultValue(false);
+            modelBuilder.Entity<ReservationEF>().Property(r => r.IsDeleted).HasDefaultValue(false);
+            modelBuilder.Entity<ReservationEF>().Property(r => r.IsCanceled).HasDefaultValue(false);
+
+            // Relations 1 - N
+            modelBuilder.Entity<RestaurantEF>().HasMany(r => r.Reservations).WithOne(r => r.Restaurant).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<CustomerEF>().HasMany(c => c.Reservations).WithOne(r => r.Customer).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<ReservationEF>().HasOne(r => r.Table);
+
+            // Problem methods
             //modelBuilder.Entity<LocationEF>().HasData(new LocationEF[] {new (1, 1945, "Lebbeke", null, null) });
             //modelBuilder.Entity<RestaurantEF>().Property(r => r.Location).HasConversion(l => l.LocationId, l => new LocationEF(l, 1234, "MIGRATION", null, null)); - reference 3
             //modelBuilder.Entity<RestaurantEF>().Property(r => r.Location).HasDefaultValue(new LocationEF(1,1234, "MIGRATION", null, null));

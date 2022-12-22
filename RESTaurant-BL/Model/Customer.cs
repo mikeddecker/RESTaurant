@@ -13,7 +13,6 @@ namespace RESTaurantBL.Model {
         private string _email;
         private string _phoneNumber;
         private Location _location;
-        private List<Reservation> _reservations = new List<Reservation>();
 
         internal Customer(int customerId, string name, string email, string phoneNumber, Location location) : this(name, email, phoneNumber, location) {
             // Constructor for customer out of DB
@@ -33,8 +32,6 @@ namespace RESTaurantBL.Model {
         public string Email { get => _email; set => SetEmail(value); }
         public string PhoneNumber { get => _phoneNumber; set => SetPhoneNumber(value); }
         public Location Location { get => _location; set => SetLocation(value); }
-
-        public List<Reservation> Reservations { get => _reservations; private set => _reservations = value; }
 
         public void SetCustomerId(int id) {
             if (id <= 0) { throw new CustomerException($"{nameof(SetCustomerId)} - Invalid customerId"); }
@@ -75,31 +72,6 @@ namespace RESTaurantBL.Model {
                    Email == customer.Email &&
                    PhoneNumber == customer.PhoneNumber &&
                    Location.Equals(customer.Location);
-        }
-
-        internal void AddReservation(Reservation reservation) {
-            // Internal method since we will not acces it directly, but always from Reservation
-            if (reservation == null) { throw new CustomerException("Reservation is null"); }
-            if (reservation.ReservationId == 0) { throw new CustomerException("Reservation has no idea"); }
-
-            // Adding reservation
-            if (_reservations.Contains(reservation)) {
-                throw new CustomerException($"{nameof(AddReservation)} - Customer already contains reservation");
-            } else {
-                // Checking if restaurant of reservation is already filled in
-                if (reservation.Customer != null) {
-                    if (!reservation.Customer.Equals(this)) {
-                        // reservation has another restaurant
-                        throw new CustomerException($"{nameof(AddReservation)} - Customer of reservation is not the same");
-                    } else {
-                        _reservations.Add(reservation);
-                    }
-                } else {
-                    // Reservation is made first, so we shouldn't come across this path
-                    //_reservations.Add(reservation);
-                    //reservation.SetRestaurant(this);
-                }
-            }
         }
     }
 }

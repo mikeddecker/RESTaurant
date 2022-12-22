@@ -15,8 +15,6 @@ namespace RESTaurantBL.Model {
         private string _kitchen;
         private string _email;
         private string _phone;
-        private List<Reservation> _reservations = new List<Reservation>();
-
 
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -47,8 +45,6 @@ namespace RESTaurantBL.Model {
         public string Phone { get => _phone; private set => SetPhone(value); }
 
         public Dictionary<int, int> Tables { get; set; } // Tablenumber - Seats
-        public List<Reservation> Reservations { get => _reservations; private set => _reservations = value; }
-
         public void SetRestaurantId(int id) {
             if (id <= 0) { throw new RestaurantException("SetRestaurantId - Id smaller than 1"); }
             _restaurantId = id;
@@ -97,32 +93,6 @@ namespace RESTaurantBL.Model {
         public override bool Equals(object? obj) {
             return obj is Restaurant restaurant &&
                    _restaurantId == restaurant._restaurantId;
-        }
-
-        internal void AddReservation(Reservation reservation) {
-            // Internal method since we will not acces it directly, but always from Reservation
-            if (reservation == null) { throw new RestaurantException("Reservation is null"); }
-            if (reservation.ReservationId == 0) { throw new RestaurantException("Reservation has no idea"); }
-
-            // Adding reservation
-            if (_reservations.Contains(reservation)) {
-                throw new RestaurantException($"{nameof(AddReservation)} - Restaurant already contains reservation");
-            } else {
-                // Checking if restaurant of reservation is already filled in
-                if (reservation.Restaurant != null) {
-                    if (!reservation.Restaurant.Equals(this)) {
-                        // reservation has another restaurant
-                        throw new ReservationException($"{nameof(AddReservation)} - Restaurant of reservation is not the same");
-                    } else {
-                        _reservations.Add(reservation);
-                    }
-                } else {
-                    // Reservation is made first, so we shouldn't come across this path
-                    //_reservations.Add(reservation);
-                    //reservation.SetRestaurant(this);
-                }
-            }
-
         }
     }
 }

@@ -48,5 +48,7 @@ namespace RESTaurantDLEF.EFModel {
         [Required]
         [Column(TypeName = "BIT")]
         public bool? IsDeleted { get; set; } = false;
+
+        public List<ReservationEF> Reservations { get; set; }
     }
 }

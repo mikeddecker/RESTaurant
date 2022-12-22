@@ -12,9 +12,13 @@ namespace RESTaurant.Controllers {
     public class CustomerController : ControllerBase {
         private string hostURL = "http://localhost:5298/api/Customer";
         private CustomerService _customerService;
+        private ReservationService _reservationService;
+        private RestaurantService _restaurantService;
 
-        public CustomerController(CustomerService customerService) {
+        public CustomerController(CustomerService customerService, RestaurantService restaurantService, ReservationService reservationService) {
             _customerService = customerService;
+            _restaurantService = restaurantService;
+            _reservationService = reservationService;
         }
 
         #region Customer
@@ -72,7 +76,16 @@ namespace RESTaurant.Controllers {
         }
         #endregion
         #region Reservation
-
+        [HttpPost]
+        [Route("Reservation")]
+        public ActionResult<ReservationRESTinputDTO> AddReservation([FromBody]ReservationRESTinputDTO reservationRESTinput) {
+            try {
+                Reservation reservation = _reservationService.AddReservation(MapToDomain.MapReservation(reservationRESTinput, _customerService, _restaurantService));
+                return CreatedAtAction(nameof(AddReservation), new { ReservationId = reservation.ReservationId }, MapToREST.MapReservation(hostURL, reservation));
+            } catch (Exception ex) {
+                return BadRequest($"{nameof(AddCustomer)} - {ex.Message}");
+            }
+        }
         #endregion
     }
 }

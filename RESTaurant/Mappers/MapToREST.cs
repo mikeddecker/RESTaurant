@@ -52,5 +52,16 @@ namespace RESTaurant.Mappers {
                 throw new MapException($"{nameof(MapCustomerList)} - {ex.Message}");
             }
         }
+
+        internal static ReservationRESToutputDTO MapReservation(string hostURL, Reservation reservation) {
+            try {
+                string reservationURL = $"{hostURL}/Reservation/{reservation.ReservationId}";
+                RestaurantRESToutputDTO restaurantRESToutput = MapRestaurant(hostURL, reservation.Restaurant);
+                CustomerRESToutputDTO customerRESToutput = MapCustomer(hostURL, reservation.Customer);
+                return new ReservationRESToutputDTO(reservationURL, reservation.Date, restaurantRESToutput, reservation.Table.TableNumber, reservation.Seats, customerRESToutput);
+            } catch (Exception ex) {
+                throw new MapException(nameof(MapReservation), ex);
+            }
+        }
     }
 }
