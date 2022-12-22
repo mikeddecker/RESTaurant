@@ -42,5 +42,16 @@ namespace RESTaurantDLEF.Mappers {
                 throw new MapException(nameof(MapTable), ex);
             }
         }
+
+        internal static Reservation MapReservation(ReservationEF r) {
+            try {
+                Restaurant restaurant = MapRestaurant(r.Restaurant);
+                Customer customer = MapCustomer(r.Customer);
+                Table table = MapTable(r.Table);
+                return new Reservation(r.ReservationId, restaurant, customer, table, r.Seats, r.Date, r.IsCanceled);
+            } catch (Exception ex) {
+                throw new MapException(nameof(MapReservation), ex);
+            }
+        }
     }
 }

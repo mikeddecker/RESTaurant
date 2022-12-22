@@ -28,7 +28,7 @@ namespace RESTaurant.Mappers {
             }
         }
 
-        internal static Reservation MapReservation(ReservationRESTinputDTO reservationRESTinput, CustomerService customerService, RestaurantService restaurantService) {
+        internal static Reservation MapReservation(ReservationRESTinputDTO reservationRESTinput, int tableNumber, CustomerService customerService, RestaurantService restaurantService) {
             try {
                 // Existential checks & getting the other data
                 if (reservationRESTinput == null) { throw new MapException($"{nameof(MapReservation)} - Reservation is null"); }
@@ -36,8 +36,8 @@ namespace RESTaurant.Mappers {
                 if (reservationRESTinput.CustomerId <= 0) { throw new MapException($"{nameof(MapReservation)} - Invalid CustomerId"); }
                 Restaurant restaurant = restaurantService.GetRestaurant(reservationRESTinput.RestaurantId);
                 Customer customer = customerService.GetCustomer(reservationRESTinput.CustomerId);
-                if (!restaurantService.HasRestaurantTableNumber(reservationRESTinput.RestaurantId, reservationRESTinput.Tablenumber)) { throw new MapException($"{nameof(MapReservation)} - Restaurant {restaurant.Name} does not contain a tablenumber {reservationRESTinput.Tablenumber}"); }
-                Table table = restaurantService.GetRestaurantTable(restaurant.RestaurantId, reservationRESTinput.Tablenumber);
+                if (!restaurantService.HasRestaurantTableNumber(reservationRESTinput.RestaurantId, tableNumber)) { throw new MapException($"{nameof(MapReservation)} - Restaurant {restaurant.Name} does not contain a tablenumber {tableNumber}"); }
+                Table table = restaurantService.GetRestaurantTable(restaurant.RestaurantId, tableNumber);
 
                 DateTime date = new DateTime(reservationRESTinput.Date.Year, reservationRESTinput.Date.Month, reservationRESTinput.Date.Day, reservationRESTinput.Date.Hour, reservationRESTinput.Date.Minute, 0);
 

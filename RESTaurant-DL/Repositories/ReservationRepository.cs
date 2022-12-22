@@ -1,4 +1,5 @@
-﻿using RESTaurantBL.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using RESTaurantBL.Interfaces;
 using RESTaurantBL.Model;
 using RESTaurantDLEF.EFModel;
 using RESTaurantDLEF.Exceptions;
@@ -33,6 +34,7 @@ namespace RESTaurantDLEF.Repositories {
             }
         }
 
+
         public bool DoesReservationExist(Reservation reservation) {
             try {
                 // Exists on restaurant, customer, date & time?
@@ -64,6 +66,16 @@ namespace RESTaurantDLEF.Repositories {
                 return ctx.Reservation.Any(r => r.Table.Tablenumber == reservation.Table.TableNumber && r.Restaurant.RestaurantId == reservation.Restaurant.RestaurantId && (reservation.Date == r.Date || reservation.Date == halfHourEarlier || reservation.Date == oneHourEarlier));
             } catch (Exception ex) {
                 throw new ReservationRepoException(nameof(DoesReservationOverlapTable), ex);
+            } finally {
+                SaveAndClear();
+            }
+        }
+
+        public List<Reservation> GetReservationsOnDate(int restaurantId, DateTime date) {
+            try {
+                return ctx.Reservation.Include(r => r.Customer).ThenInclude(c => c.Location).Include(r => r.Restaurant).ThenInclude(r => r.Location).Include(r => r.Table).Where(r => r.Restaurant.RestaurantId == restaurantId && r.Date.Date == date.Date).Select(r => MapToDomain.MapReservation(r)).ToList();
+            } catch (Exception ex) {
+                throw new ReservationRepoException(nameof(GetReservationsOnDate), ex);
             } finally {
                 SaveAndClear();
             }

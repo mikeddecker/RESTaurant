@@ -38,7 +38,7 @@ namespace RESTaurant.Controllers {
             try {
                 if (customerId <= 0) { return BadRequest($"{nameof(GetCustomer)} - Invalid CustomerId"); }
                 if (!_customerService.DoesCustomerExist(customerId)) { return NotFound($"{nameof(GetCustomer)} - Customer does not exist"); }
-                return Ok(MapToREST.MapCustomer(hostURL,_customerService.GetCustomer(customerId)));
+                return Ok(MapToREST.MapCustomer(hostURL, _customerService.GetCustomer(customerId)));
             } catch (Exception ex) {
                 return BadRequest($"{nameof(GetCustomer)} - {ex.Message}");
             }
@@ -78,9 +78,14 @@ namespace RESTaurant.Controllers {
         #region Reservation
         [HttpPost]
         [Route("Reservation")]
-        public ActionResult<ReservationRESTinputDTO> AddReservation([FromBody]ReservationRESTinputDTO reservationRESTinput) {
+        public ActionResult<ReservationRESTinputDTO> AddReservation([FromBody] ReservationRESTinputDTO reservationRESTinput) {
             try {
-                Reservation reservation = _reservationService.AddReservation(MapToDomain.MapReservation(reservationRESTinput, _customerService, _restaurantService));
+                if (!_reservationService.CanMakeReservation(reservationRESTinput.RestaurantId, reservationRESTinput.Date, reservationRESTinput.Seats)) {
+                    Restaurant restaurant = _restaurantService.GetRestaurant(reservationRESTinput.RestaurantId);
+                    return BadRequest($"Can't make a reservation on {reservationRESTinput.Date} for {reservationRESTinput.Seats} at {restaurant.Name} ");
+                }
+                int tableNumber = 3; //_reservationService.GetTableForReservation(reservationRESTinput.RestaurantId, reservationRESTinput.Date, reservationRESTinput.Seats);
+                Reservation reservation = _reservationService.AddReservation(MapToDomain.MapReservation(reservationRESTinput, tableNumber, _customerService, _restaurantService));
                 return CreatedAtAction(nameof(AddReservation), new { ReservationId = reservation.ReservationId }, MapToREST.MapReservation(hostURL, reservation));
             } catch (Exception ex) {
                 return BadRequest($"{nameof(AddCustomer)} - {ex.Message}");
