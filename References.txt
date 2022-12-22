@@ -3,3 +3,4 @@
 1 - MethodName - https://stackoverflow.com/questions/2652460/how-to-get-the-name-of-the-current-method-from-code
 2 - Created At Action routes - https://stackoverflow.com/questions/52044381/no-route-matches-the-supplied-values
 3 - Migrations customer-location-restaurant- https://learn.microsoft.com/en-us/ef/core/modeling/value-conversions?tabs=data-annotations
+4 - OnDeleteBehavior - https://stackoverflow.com/questions/63306882/specify-on-delete-no-action-or-on-update-no-action-or-modify-other-foreign-key
