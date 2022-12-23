@@ -5,12 +5,13 @@ using RESTaurant.Model.Output;
 using RESTaurant.Mappers;
 using RESTaurantBL.Model;
 using RESTaurantBL.Services;
+using RESTaurantDLEF.EFModel;
 
 namespace RESTaurant.Controllers {
     [Route("api/[controller]")]
     [ApiController]
     public class CustomerController : ControllerBase {
-        private string hostURL = "http://localhost:5298/api/Customer";
+        private string hostURL = "http://localhost:5298/api/Customer"; // TODO update url --> GetRestaurant "id": "http://localhost:5298/api/Customer/1", "name": "Cartoon",
         private CustomerService _customerService;
         private ReservationService _reservationService;
         private RestaurantService _restaurantService;
@@ -92,6 +93,51 @@ namespace RESTaurant.Controllers {
                 return BadRequest($"{nameof(AddCustomer)} - {ex.Message}");
             }
         }
+
+        [HttpGet]
+        [Route("Restaurant")]
+        public ActionResult<List<RestaurantRESToutputDTO>> GetRestaurants([FromQuery] string? kitchen, [FromQuery] int? postalCode) {
+            try {
+                if (!string.IsNullOrWhiteSpace(kitchen) && !_restaurantService.ContainsKitchenType(kitchen)) { return BadRequest($"Invalid kitchentype {kitchen}"); }
+                if (postalCode.HasValue) {
+                    if (postalCode.Value > 9999 || postalCode.Value < 1000) { return BadRequest($"Invalid postal code {postalCode}"); }
+                } else if (!string.IsNullOrWhiteSpace(kitchen)) {
+
+                }
+                if (string.IsNullOrWhiteSpace(kitchen) && !postalCode.HasValue) {
+                    return Ok(MapToREST.MapRestaurantList(hostURL, _restaurantService.GetRestaurants()));
+                } else {
+                    return Ok(MapToREST.MapRestaurantList(hostURL, _restaurantService.GetRestaurants(kitchen, postalCode)));
+                }
+            } catch (Exception ex) {
+                return BadRequest($"{nameof(GetRestaurants)} - {ex.Message}");
+            }
+        }
+
+        [HttpGet]
+        [Route("ReservableRestaurants")]
+        public ActionResult<List<ReservationRESToutputDTO>> GetReservableRestaurants([FromQuery] DateTime date) {
+            try {
+                if (date.GetHashCode() == 0) { return BadRequest($"Date hashcode 0"); }
+                if (date < DateTime.Now) { return BadRequest($"Date can't be in the past"); }
+                return Ok(MapToREST.MapRestaurantList(hostURL, _reservationService.CanIMakeReservation(date)));
+            } catch (Exception ex) {
+                return BadRequest($"{nameof(GetReservableRestaurants)} - {ex.Message}");
+            }
+        }
+
+        [HttpGet]
+        [Route("Reservation/{customerId}")]
+        public ActionResult<List<ReservationRESToutputDTO>> GetReservations(int customerId) {
+            try {
+                //if (date.GetHashCode() == 0) { return BadRequest($"Date hashcode 0"); }
+                //if (date < DateTime.Now) { return BadRequest($"Date can't be in the past"); }
+                return Ok(MapToREST.MapReservationList(hostURL, _reservationService.GetReservationsOfCustomer(customerId)));
+            } catch (Exception ex) {
+                return BadRequest($"{nameof(GetReservations)} - {ex.Message}");
+            }
+        }
+
         #endregion
     }
 }

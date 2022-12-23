@@ -63,5 +63,15 @@ namespace RESTaurant.Mappers {
                 throw new MapException(nameof(MapReservation), ex);
             }
         }
+
+        internal static List<ReservationRESToutputDTO> MapReservationList(string hostURL, List<Reservation> reservations) {
+            try {
+                return reservations.Select(r => MapReservation(hostURL, r)).ToList();
+            } catch (MapException) {
+                throw;
+            } catch (Exception ex) {
+                throw new MapException(nameof(MapReservationList), ex);
+            }
+        }
     }
 }

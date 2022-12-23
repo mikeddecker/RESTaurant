@@ -20,5 +20,6 @@ namespace RESTaurantBL.Interfaces {
         void DeleteTableOfRestaurant(int restaurantId, int tablenumber);
         void UpdateTableOfRestaurant(int restaurantId, int tableNumber, int seats);
         Table GetTableOfRestaurant(int restaurantId, int tableNumber);
+        List<Restaurant> GetRestaurants(string kitchen, int? postalCode);
     }
 }

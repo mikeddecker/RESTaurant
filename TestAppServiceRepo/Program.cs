@@ -29,6 +29,6 @@ ReservationService reservationService = new ReservationService(reservationReposi
 //}
 
 
-reservationService.CanMakeReservation(1, new DateTime(2022, 12, 30, 20, 30, 0), 3);
+//reservationService.CanMakeReservation(1, new DateTime(2022, 12, 30, 20, 30, 0), 3);
 
 Console.WriteLine(true);

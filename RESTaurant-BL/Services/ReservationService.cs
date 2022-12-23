@@ -31,6 +31,24 @@ namespace RESTaurantBL.Services {
             }
         }
 
+        public List<Restaurant> CanIMakeReservation(DateTime date) {
+            try {
+                if (date.GetHashCode() == 0) {
+                    throw new ReservationServiceException($"{nameof(CanIMakeReservation)} - Date hashcode 0");
+                }
+                if (date < DateTime.Now) {
+                    throw new ReservationServiceException($"{nameof(CanIMakeReservation)} - Date can't be in the past");
+                }
+
+                return _reservationRepository.GetAvailableRestaurants(date);
+
+            } catch (ReservationServiceException) {
+                throw;
+            } catch (Exception ex) {
+                throw new ReservationServiceException(nameof(CanMakeReservation_GetTablenumber), ex);
+            }
+        }
+
         public (bool, int) CanMakeReservation_GetTablenumber(int restaurantId, DateTime date, int seats) {
             try {
                 if (restaurantId <= 0) { throw new ReservationServiceException($"{nameof(CanMakeReservation_GetTablenumber)} - Invalid restaurantId"); }
@@ -58,13 +76,31 @@ namespace RESTaurantBL.Services {
                         }
                     }
                 }
-               
-                return (false, 0); 
+
+                return (false, 0);
 
             } catch (ReservationServiceException) {
                 throw;
             } catch (Exception ex) {
                 throw new ReservationServiceException(nameof(CanMakeReservation_GetTablenumber), ex);
+            }
+        }
+
+        public List<Reservation> GetReservationsOfCustomer(int customerId) {
+            try {
+                if (customerId <= 0) { throw new ReservationServiceException($"{nameof(GetReservationsOfCustomer)} - Invalid customerId"); }
+                //if (date < DateTime.Now) { throw new ReservationServiceException($"{nameof(CanMakeReservation_GetTablenumber)} - Reservations must be in the future"); }
+                //if (seats <= 0) { throw new ReservationServiceException($"{nameof(CanMakeReservation_GetTablenumber)} - Seats must be positive"); }
+
+                //TimeSpan halfHourEarlier = date.AddMinutes(-30).TimeOfDay;
+                //TimeSpan oneHourEarlier = date.AddHours(-1).TimeOfDay;
+
+                return _reservationRepository.GetReservationsOfCustomer(customerId);
+
+            } catch (ReservationServiceException) {
+                throw;
+            } catch (Exception ex) {
+                throw new ReservationServiceException(nameof(GetReservationsOfCustomer), ex);
             }
         }
     }

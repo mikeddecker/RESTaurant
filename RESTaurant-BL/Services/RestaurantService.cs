@@ -164,5 +164,33 @@ namespace RESTaurantBL.Services {
                 throw new RestaurantServiceException(nameof(HasRestaurantTableNumber), ex);
             }
         }
+
+        public List<Restaurant> GetRestaurants(string kitchen, int? postalCode) {
+            try {
+                // At least one parameter should be filled in
+                if (!postalCode.HasValue && string.IsNullOrWhiteSpace(kitchen)) { throw new RestaurantServiceException($"{nameof(GetRestaurants)} - Both kitchentype and postalcode are not filled in"); }
+
+                // Checking the filled in data, if filled in
+                if (!string.IsNullOrWhiteSpace(kitchen) && !ContainsKitchenType(kitchen)) { throw new RestaurantServiceException($"{nameof(GetRestaurants)} - Invalid kitchentype"); }
+                if (postalCode.HasValue) {
+                    // gives error when in && ??? don't know why, not gonna retry
+                    if (postalCode.Value > 9999 || postalCode.Value < 1000) { throw new RestaurantServiceException($"{nameof(GetRestaurants)} - Invalid postal code {postalCode}"); }
+                }
+
+                return _restaurantRepo.GetRestaurants(kitchen, postalCode);
+            } catch (Exception ex) {
+                throw new RestaurantServiceException(nameof(GetRestaurants), ex);
+            }
+        }
+
+        public bool ContainsKitchenType(string kitchen) {
+            try {
+                return GetKitchenTypes().Contains(kitchen);
+            } catch (RestaurantServiceException) {
+                throw;
+            } catch (Exception ex) {
+                throw new RestaurantServiceException(nameof(ContainsKitchenType), ex);
+            }
+        }
     }
 }

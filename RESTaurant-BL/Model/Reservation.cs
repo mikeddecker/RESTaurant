@@ -23,8 +23,14 @@ namespace RESTaurantBL.Model {
             SetCustomer(customer);
         }
 
-        public Reservation(int reservationId, Restaurant restaurant, Customer customer, Table table, int seats, DateTime date, bool isCanceled) : this(restaurant, customer, table, seats, date) {
+        public Reservation(int reservationId, Restaurant restaurant, Customer customer, Table table, int seats, DateTime date, bool isCanceled) {
+            // We do not use : this (...) because order of setting is necesairy --> id before date
             SetReservationId(reservationId);
+            SetDate(date);
+            SetTable(table);
+            SetSeats(seats);
+            SetRestaurant(restaurant);
+            SetCustomer(customer);
             if (isCanceled) { SetIsCanceled(isCanceled); }
         }
 

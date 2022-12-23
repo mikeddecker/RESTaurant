@@ -176,5 +176,27 @@ namespace RESTaurantDLEF.Repositories {
                 SaveAndClear();
             }
         }
+
+        public List<Restaurant> GetRestaurants(string kitchen, int? postalCode) {
+            try {
+                // At least one parameter should be filled in
+                List<Restaurant> restaurants;
+                if (string.IsNullOrWhiteSpace(kitchen)) {
+                    // PostalCode is filled in & kitchen not
+                    restaurants = ctx.Restaurant.Include(r => r.Location).Where(r => r.Location.PostalCode == postalCode.Value && r.IsDeleted == false).Select(rEF => MapToDomain.MapRestaurant(rEF)).ToList();
+                } else if (!postalCode.HasValue) {
+                    // kitchen is filled in & postalCode not
+                    restaurants = ctx.Restaurant.Include(r => r.Location).Where(r => r.Kitchen == kitchen && r.IsDeleted == false).Select(rEF => MapToDomain.MapRestaurant(rEF)).ToList();
+                } else {
+                    // Both are filled in
+                    restaurants = ctx.Restaurant.Include(r => r.Location).Where(r => r.Location.PostalCode == postalCode.Value && r.Kitchen == kitchen && r.IsDeleted == false).Select(rEF => MapToDomain.MapRestaurant(rEF)).ToList();
+                }
+                return restaurants;
+            } catch (Exception ex) {
+                throw new RestaurantRepoException(nameof(GetTableOfRestaurant), ex);
+            } finally {
+                SaveAndClear();
+            }
+        }
     }
 }
