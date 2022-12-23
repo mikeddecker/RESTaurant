@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using RESTaurantBL.Interfaces;
 using RESTaurantBL.Model;
 using RESTaurantDLEF.EFModel;
@@ -151,6 +152,40 @@ namespace RESTaurantDLEF.Repositories {
                 SaveAndClear(); // Setting it here, so we can catch exceptions
             } catch (Exception ex) {
                 throw new ReservationRepoException(nameof(CancelReservation), ex);
+            }
+        }
+
+        public Reservation GetReservation(int reservationId) {
+            try {
+                return MapToDomain.MapReservation(ctx.Reservation.AsNoTracking().Include(r => r.Restaurant).ThenInclude(r => r.Location).Include(r => r.Customer).ThenInclude(c => c.Location).Include(r => r.Table).Single(r => r.ReservationId == reservationId));
+            } catch (Exception ex) {
+                throw new ReservationRepoException(nameof(GetReservation), ex);
+            } finally {
+                SaveAndClear();
+            }
+        }
+
+        public Reservation UpdateReservation(int reservationId, DateTime? date, int? seats, int tableNr) {
+            try {
+                ReservationEF reservationEF = ctx.Reservation.Include(r => r.Restaurant).ThenInclude(r => r.Location).Include(r => r.Customer).ThenInclude(c => c.Location).Include(r => r.Table).Single(r => r.ReservationId == reservationId);
+                if (date.HasValue) { reservationEF.Date = date.Value; }
+                if (seats.HasValue) { reservationEF.Seats = seats.Value; }
+                if (reservationEF.Table.Tablenumber != tableNr) { reservationEF.Table = ctx.Table.Single(t => t.Tablenumber == tableNr && reservationEF.Restaurant.RestaurantId == t.RestaurantId && t.IsDeleted == false); }
+                SaveAndClear();
+                return MapToDomain.MapReservation(reservationEF);
+            } catch (Exception ex) {
+                throw new ReservationRepoException(nameof(GetReservation), ex);
+            }
+        }
+
+        public Reservation UpdateReservation_OtherCustomerAmountStillAtTheSameTable(int reservationId, int seats) {
+            try {
+                ReservationEF reservationEF = ctx.Reservation.Include(r => r.Restaurant).ThenInclude(r => r.Location).Include(r => r.Customer).ThenInclude(c => c.Location).Include(r => r.Table).Include(r => r.Table).Single(r => r.ReservationId == reservationId);
+                reservationEF.Seats = seats;
+                SaveAndClear();
+                return MapToDomain.MapReservation(reservationEF);
+            } catch (Exception ex) {
+                throw new ReservationRepoException(nameof(UpdateReservation_OtherCustomerAmountStillAtTheSameTable), ex);
             }
         }
     }

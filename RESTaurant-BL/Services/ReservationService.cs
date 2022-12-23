@@ -35,12 +35,12 @@ namespace RESTaurantBL.Services {
             try {
                 if (reservationId <= 0) { throw new ReservationServiceException($"{nameof(CancelReservation)} - Invalid reservationIdea"); }
                 if (!_reservationRepository.DoesReservationExist(reservationId)) { throw new ReservationServiceException($"{nameof(AddReservation)} - Reservation does not exists)"); }
-                
+
                 _reservationRepository.CancelReservation(reservationId);
             } catch (ReservationServiceException) {
                 throw;
             } catch (Exception ex) {
-                throw new ReservationServiceException(nameof(AddReservation), ex);
+                throw new ReservationServiceException(nameof(CancelReservation), ex);
             }
         }
 
@@ -99,6 +99,17 @@ namespace RESTaurantBL.Services {
             }
         }
 
+        public bool DoesReservationExist(int reservationId) {
+            try {
+                if (reservationId <= 0) { throw new ReservationServiceException($"{nameof(DoesReservationExist)} - Invalid reservationIdea"); }
+                return _reservationRepository.DoesReservationExist(reservationId);
+            } catch (ReservationServiceException) {
+                throw;
+            } catch (Exception ex) {
+                throw new ReservationServiceException(nameof(DoesReservationExist), ex);
+            }
+        }
+
         public List<Reservation> GetReservationsOfCustomer(int customerId, DateTime beginDate, DateTime endDate) {
             try {
                 if (customerId <= 0) { throw new ReservationServiceException($"{nameof(GetReservationsOfCustomer)} - Invalid customerId"); }
@@ -111,6 +122,80 @@ namespace RESTaurantBL.Services {
                 throw;
             } catch (Exception ex) {
                 throw new ReservationServiceException(nameof(GetReservationsOfCustomer), ex);
+            }
+        }
+
+        private Table CheckForSmallerTable(Reservation reservation, int seats) {
+            // Returns the same table if there are no changes
+            try {
+                (bool, int) canReserveTable = CanMakeReservation_GetTablenumber(reservation.Restaurant.RestaurantId, reservation.Date, seats);
+                if (canReserveTable.Item1) {
+                    // Another table available?
+                    Table table = _restaurantRepository.GetTableOfRestaurant(reservation.Restaurant.RestaurantId, canReserveTable.Item2);
+                    return table.Seats < reservation.Table.Seats ? table : reservation.Table;
+                } else {
+                    // No other table available
+                    return reservation.Table;
+                }
+
+            } catch (ReservationServiceException) {
+                throw;
+            } catch (Exception ex) {
+                throw new ReservationServiceException(nameof(CheckForSmallerTable), ex);
+            }
+        }
+
+        public Reservation UpdateReservation(int reservationId, DateTime? date, int? seats) {
+            try {
+                if (!seats.HasValue && !date.HasValue) { throw new ReservationServiceException($"{nameof(UpdateReservation)} - Bothe date and seats are null"); }
+                if (reservationId <= 0) { throw new ReservationServiceException($"{nameof(UpdateReservation)} - Invalid reservationId"); }
+                if (date.HasValue && date.Value.GetHashCode() == 0) { throw new ReservationServiceException($"{nameof(UpdateReservation)} - date hashcode 0"); }
+                if (date.HasValue && date.Value < DateTime.Now) { throw new ReservationServiceException($"{nameof(UpdateReservation)} - date must be in the future"); }
+                if (seats.HasValue && seats.Value <= 0) { throw new ReservationServiceException($"{nameof(UpdateReservation)} - seats must be more than 0"); }
+
+                // checking if there are changes
+                bool isGonnaChange = false;
+                Reservation reservationDB = _reservationRepository.GetReservation(reservationId);
+                if (date.HasValue && reservationDB.Date != date.Value) { isGonnaChange = true; }
+                if (seats.HasValue && reservationDB.Seats != seats.Value) { isGonnaChange = true; }
+                if (!isGonnaChange) {
+                    throw new ReservationServiceException($"{nameof(UpdateReservation)} - No update");
+                } else {
+                    // First scenario: only seats changed
+                    if (!date.HasValue) {
+                        // That means, seats have changed
+                        // if date hasn't changed and more seats asked than initial and the reserved table still has seats left, just update the seats amount of reservation
+                        if (seats.Value > reservationDB.Seats && reservationDB.Table.Seats >= seats.Value) {
+                            // More customers, but still at the same table
+                            return _reservationRepository.UpdateReservation_OtherCustomerAmountStillAtTheSameTable(reservationId, seats.Value);
+                        } else {
+                            // Less people at the table, date is the same
+                            Table table = CheckForSmallerTable(reservationDB, seats.Value); // always returns a table.
+                            if (table.Seats < reservationDB.Table.Seats) {
+                                return _reservationRepository.UpdateReservation(reservationId, date, seats, table.TableNumber);
+                            } else {
+                                // less customers, but still the same table
+                                return _reservationRepository.UpdateReservation_OtherCustomerAmountStillAtTheSameTable(reservationId, seats.Value);
+                            }
+                        }
+                    } else {
+                        // Date changed, so let's also just get another table
+                        DateTime canMakeReservationDate = date.HasValue ? date.Value : reservationDB.Date;
+                        int canMakeReservationSeats = seats.HasValue ? seats.Value : reservationDB.Seats;
+                        (bool, int) canReserveTable = CanMakeReservation_GetTablenumber(reservationDB.ReservationId, canMakeReservationDate, canMakeReservationSeats);
+
+                        if (canReserveTable.Item1) {
+                            return _reservationRepository.UpdateReservation(reservationId, date, seats, canReserveTable.Item2);
+                        } else {
+                            throw new ReservationServiceException($"{nameof(UpdateReservation)} - Can't find a table for {canMakeReservationSeats} on {canMakeReservationDate} at {reservationDB.Restaurant.Name}");
+                        }
+                    }
+                }
+                //return _reservationRepository.UpdateReservation(reservationId, date, seats);
+            } catch (ReservationServiceException) {
+                throw;
+            } catch (Exception ex) {
+                throw new ReservationServiceException(nameof(UpdateReservation), ex);
             }
         }
     }

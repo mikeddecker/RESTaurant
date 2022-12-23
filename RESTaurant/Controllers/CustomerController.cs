@@ -130,7 +130,7 @@ namespace RESTaurant.Controllers {
         [Route("Reservation/{customerId}")]
         public ActionResult<List<ReservationRESToutputDTO>> GetReservations(int customerId, [FromQuery] DateTime? startTime, [FromQuery] DateTime? endTime) {
             try {
-                DateTime beginDate = new DateTime(1900,01,01);
+                DateTime beginDate = new DateTime(1900, 01, 01);
                 DateTime endDate = new DateTime(2999, 12, 31);
                 if (startTime.GetHashCode() != 0) { beginDate = startTime.Value; }
                 if (endTime.GetHashCode() != 0) { endDate = endTime.Value; }
@@ -149,6 +149,24 @@ namespace RESTaurant.Controllers {
                 return NoContent();
             } catch (Exception ex) {
                 return BadRequest($"{nameof(CancellationToken)} - {ex.Message}");
+            }
+        }
+
+        [HttpPut]
+        [Route("Reservation/{reservationId}")]
+        public IActionResult UpdateReservation(int reservationId, [FromQuery] DateTime? date, [FromQuery] int? seats) {
+            try {
+                // At least one shoulde be filled in
+                if (!date.HasValue && !seats.HasValue) { return BadRequest($"{nameof(UpdateReservation)} - No update"); }
+
+                if (_reservationService.DoesReservationExist(reservationId)) {
+                    Reservation reservation = _reservationService.UpdateReservation(reservationId, date, seats);
+                    return CreatedAtAction(nameof(UpdateReservation), reservationId, MapToREST.MapReservation(hostURL, reservation));
+                } else {
+                    return NotFound($"Reservation {reservationId} not found");
+                }
+            } catch (Exception ex) {
+                return BadRequest(ex.Message);
             }
         }
 
