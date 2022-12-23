@@ -133,5 +133,25 @@ namespace RESTaurantDLEF.Repositories {
                 SaveAndClear();
             }
         }
+
+        public bool DoesReservationExist(int reservationId) {
+            try {
+                return ctx.Reservation.AsNoTracking().Any(r => r.ReservationId == reservationId && r.IsDeleted == false && r.IsCanceled == false);
+            } catch (Exception ex) {
+                throw new ReservationRepoException(nameof(DoesReservationExist), ex);
+            } finally {
+                SaveAndClear();
+            }
+        }
+
+        public void CancelReservation(int reservationId) {
+            try {
+                ReservationEF reservationEF = ctx.Reservation.Single(r => r.ReservationId == reservationId && r.IsDeleted == false && r.IsCanceled == false);
+                reservationEF.IsCanceled = true;
+                SaveAndClear(); // Setting it here, so we can catch exceptions
+            } catch (Exception ex) {
+                throw new ReservationRepoException(nameof(CancelReservation), ex);
+            }
+        }
     }
 }

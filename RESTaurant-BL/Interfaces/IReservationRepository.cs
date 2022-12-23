@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 namespace RESTaurantBL.Interfaces {
     public interface IReservationRepository {
         Reservation AddReservation(Reservation reservation);
+        void CancelReservation(int reservationId);
         bool DoesReservationExist(Reservation reservation);
+        bool DoesReservationExist(int reservationId);
         bool DoesReservationOverlapCustomer(Reservation reservation);
         bool DoesReservationOverlapTable(Reservation reservation);
         List<Restaurant> GetAvailableRestaurants(DateTime date);

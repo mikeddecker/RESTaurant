@@ -31,6 +31,19 @@ namespace RESTaurantBL.Services {
             }
         }
 
+        public void CancelReservation(int reservationId) {
+            try {
+                if (reservationId <= 0) { throw new ReservationServiceException($"{nameof(CancelReservation)} - Invalid reservationIdea"); }
+                if (!_reservationRepository.DoesReservationExist(reservationId)) { throw new ReservationServiceException($"{nameof(AddReservation)} - Reservation does not exists)"); }
+                
+                _reservationRepository.CancelReservation(reservationId);
+            } catch (ReservationServiceException) {
+                throw;
+            } catch (Exception ex) {
+                throw new ReservationServiceException(nameof(AddReservation), ex);
+            }
+        }
+
         public List<Restaurant> CanIMakeReservation(DateTime date) {
             try {
                 if (date.GetHashCode() == 0) {

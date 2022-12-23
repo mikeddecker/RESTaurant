@@ -66,7 +66,7 @@ namespace RESTaurant.Controllers {
         }
 
         [HttpDelete("Goodbye/{customerId}")]
-        public ActionResult<CustomerRESToutputDTO> DeleteCustomer(int customerId) {
+        public IActionResult DeleteCustomer(int customerId) {
             try {
                 if (customerId <= 0) { return BadRequest($"{nameof(DeleteCustomer)} - Invalid customerId"); }
                 _customerService.DeleteCustomer(customerId);
@@ -138,6 +138,17 @@ namespace RESTaurant.Controllers {
                 return Ok(MapToREST.MapReservationList(hostURL, _reservationService.GetReservationsOfCustomer(customerId, beginDate, endDate)));
             } catch (Exception ex) {
                 return BadRequest($"{nameof(GetReservations)} - {ex.Message}");
+            }
+        }
+
+        [HttpPut]
+        [Route("CancelReservation/{reservationId}")]
+        public IActionResult CancelReservation(int reservationId) {
+            try {
+                _reservationService.CancelReservation(reservationId);
+                return NoContent();
+            } catch (Exception ex) {
+                return BadRequest($"{nameof(CancellationToken)} - {ex.Message}");
             }
         }
 
