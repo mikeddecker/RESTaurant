@@ -31,33 +31,40 @@ namespace RESTaurantBL.Services {
             }
         }
 
-        public bool CanMakeReservation(int restaurantId, DateTime date, int seats) {
+        public (bool, int) CanMakeReservation_GetTablenumber(int restaurantId, DateTime date, int seats) {
             try {
-                if (restaurantId <= 0) { throw new ReservationServiceException($"{nameof(CanMakeReservation)} - Invalid restaurantId"); }
-                if (date < DateTime.Now) { throw new ReservationServiceException($"{nameof(CanMakeReservation)} - Reservations must be in the future"); }
-                if (seats <= 0) { throw new ReservationServiceException($"{nameof(CanMakeReservation)} - Seats must be positive"); }
+                if (restaurantId <= 0) { throw new ReservationServiceException($"{nameof(CanMakeReservation_GetTablenumber)} - Invalid restaurantId"); }
+                if (date < DateTime.Now) { throw new ReservationServiceException($"{nameof(CanMakeReservation_GetTablenumber)} - Reservations must be in the future"); }
+                if (seats <= 0) { throw new ReservationServiceException($"{nameof(CanMakeReservation_GetTablenumber)} - Seats must be positive"); }
 
                 TimeSpan halfHourEarlier = date.AddMinutes(-30).TimeOfDay;
                 TimeSpan oneHourEarlier = date.AddHours(-1).TimeOfDay;
 
-                Dictionary<int, int> tablesOfRestaurant = _restaurantRepository.GetTablesOfRestaurant(restaurantId);
-                List<Reservation> reservationsOnDate = _reservationRepository.GetReservationsOnDate(restaurantId, date);
+                Dictionary<int, int> tableSeats = _restaurantRepository.GetTablesOfRestaurant(restaurantId);
+                int amountOfTables = tableSeats.Count();
+                tableSeats = tableSeats.Where(t => t.Value >= seats).OrderBy(t => t.Value).ToDictionary(t => t.Key, t => t.Value);
+                Dictionary<int, Reservation> reservations = _reservationRepository.GetReservationsOnDate_Table_Reservation(restaurantId, date);
 
-                // checking every table if there are reservations, if there is a spots and amount of seats allows us to make a reservation, return true;
-                foreach (int table in tablesOfRestaurant.Keys) {
-                    // Are t
-                    var r = reservationsOnDate.GroupBy(r => r.Table);//.ToDictionary<Table, List<Reservation>>()
-                        //&& (r.Date.TimeOfDay == date.TimeOfDay || r.Date.TimeOfDay == halfHourEarlier || r.Date.TimeOfDay == oneHourEarlier))) {
-                        
-                        return false;
-                    
+                // check if all tables for that date are reserved
+                if (amountOfTables == reservations.Count()) {
+                    return (false, 0);
+                } else {
+                    // Not all tables are reserved
+                    foreach (int tablenumber in tableSeats.Keys) {
+                        // Does the table already contain a reservation on this hour?
+                        // If not, return tablenumber
+                        if (!reservations.ContainsKey(tablenumber)) {
+                            return (true, tablenumber);
+                        }
+                    }
                 }
-                return true;
+               
+                return (false, 0); 
 
             } catch (ReservationServiceException) {
                 throw;
             } catch (Exception ex) {
-                throw new ReservationServiceException(nameof(CanMakeReservation), ex);
+                throw new ReservationServiceException(nameof(CanMakeReservation_GetTablenumber), ex);
             }
         }
     }

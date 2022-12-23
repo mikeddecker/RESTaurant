@@ -80,11 +80,12 @@ namespace RESTaurant.Controllers {
         [Route("Reservation")]
         public ActionResult<ReservationRESTinputDTO> AddReservation([FromBody] ReservationRESTinputDTO reservationRESTinput) {
             try {
-                if (!_reservationService.CanMakeReservation(reservationRESTinput.RestaurantId, reservationRESTinput.Date, reservationRESTinput.Seats)) {
+                (bool, int) reservableTablenumber = _reservationService.CanMakeReservation_GetTablenumber(reservationRESTinput.RestaurantId, reservationRESTinput.Date, reservationRESTinput.Seats);
+                if (!reservableTablenumber.Item1) {
                     Restaurant restaurant = _restaurantService.GetRestaurant(reservationRESTinput.RestaurantId);
                     return BadRequest($"Can't make a reservation on {reservationRESTinput.Date} for {reservationRESTinput.Seats} at {restaurant.Name} ");
                 }
-                int tableNumber = 3; //_reservationService.GetTableForReservation(reservationRESTinput.RestaurantId, reservationRESTinput.Date, reservationRESTinput.Seats);
+                int tableNumber = reservableTablenumber.Item2; //_reservationService.GetTableForReservation(reservationRESTinput.RestaurantId, reservationRESTinput.Date, reservationRESTinput.Seats);
                 Reservation reservation = _reservationService.AddReservation(MapToDomain.MapReservation(reservationRESTinput, tableNumber, _customerService, _restaurantService));
                 return CreatedAtAction(nameof(AddReservation), new { ReservationId = reservation.ReservationId }, MapToREST.MapReservation(hostURL, reservation));
             } catch (Exception ex) {

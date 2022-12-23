@@ -11,6 +11,6 @@ namespace RESTaurantBL.Interfaces {
         bool DoesReservationExist(Reservation reservation);
         bool DoesReservationOverlapCustomer(Reservation reservation);
         bool DoesReservationOverlapTable(Reservation reservation);
-        List<Reservation> GetReservationsOnDate(int restaurantId, DateTime date);
+        Dictionary<int, Reservation> GetReservationsOnDate_Table_Reservation(int restaurantId, DateTime date);
     }
 }

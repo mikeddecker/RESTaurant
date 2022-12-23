@@ -71,11 +71,13 @@ namespace RESTaurantDLEF.Repositories {
             }
         }
 
-        public List<Reservation> GetReservationsOnDate(int restaurantId, DateTime date) {
+        public Dictionary<int, Reservation> GetReservationsOnDate_Table_Reservation(int restaurantId, DateTime date) {
             try {
-                return ctx.Reservation.Include(r => r.Customer).ThenInclude(c => c.Location).Include(r => r.Restaurant).ThenInclude(r => r.Location).Include(r => r.Table).Where(r => r.Restaurant.RestaurantId == restaurantId && r.Date.Date == date.Date).Select(r => MapToDomain.MapReservation(r)).ToList();
+                DateTime halfHourEarlier = date.Add(new TimeSpan(0, -30, 0));
+                DateTime oneHourEarlier = date.Add(new TimeSpan(-1, 0, 0));
+                return ctx.Reservation.Include(r => r.Restaurant).ThenInclude(r => r.Location).Include(r => r.Customer).ThenInclude(c => c.Location).Include(r => r.Table).Where(r => r.IsDeleted == false && r.IsCanceled == false && r.Restaurant.RestaurantId == restaurantId && (r.Date == date || r.Date == halfHourEarlier || r.Date == oneHourEarlier)).Select(r => MapToDomain.MapReservation(r)).ToDictionary(r => r.Table.TableNumber, r => r) ;
             } catch (Exception ex) {
-                throw new ReservationRepoException(nameof(GetReservationsOnDate), ex);
+                throw new ReservationRepoException(nameof(GetReservationsOnDate_Table_Reservation), ex);
             } finally {
                 SaveAndClear();
             }
