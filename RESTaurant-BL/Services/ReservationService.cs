@@ -86,16 +86,13 @@ namespace RESTaurantBL.Services {
             }
         }
 
-        public List<Reservation> GetReservationsOfCustomer(int customerId) {
+        public List<Reservation> GetReservationsOfCustomer(int customerId, DateTime beginDate, DateTime endDate) {
             try {
                 if (customerId <= 0) { throw new ReservationServiceException($"{nameof(GetReservationsOfCustomer)} - Invalid customerId"); }
-                //if (date < DateTime.Now) { throw new ReservationServiceException($"{nameof(CanMakeReservation_GetTablenumber)} - Reservations must be in the future"); }
-                //if (seats <= 0) { throw new ReservationServiceException($"{nameof(CanMakeReservation_GetTablenumber)} - Seats must be positive"); }
-
-                //TimeSpan halfHourEarlier = date.AddMinutes(-30).TimeOfDay;
-                //TimeSpan oneHourEarlier = date.AddHours(-1).TimeOfDay;
-
-                return _reservationRepository.GetReservationsOfCustomer(customerId);
+                if (beginDate.GetHashCode() == 0) { throw new ReservationServiceException($"{nameof(GetReservationsOfCustomer)} - beginDate hashcode 0"); }
+                if (endDate.GetHashCode() == 0) { throw new ReservationServiceException($"{nameof(GetReservationsOfCustomer)} - endDate hashcode 0"); }
+                if (beginDate >= endDate) { throw new ReservationServiceException($"{nameof(GetReservationsOfCustomer)} - enddate must be later than startdate"); }
+                return _reservationRepository.GetReservationsOfCustomer(customerId, beginDate, endDate);
 
             } catch (ReservationServiceException) {
                 throw;

@@ -128,11 +128,14 @@ namespace RESTaurant.Controllers {
 
         [HttpGet]
         [Route("Reservation/{customerId}")]
-        public ActionResult<List<ReservationRESToutputDTO>> GetReservations(int customerId) {
+        public ActionResult<List<ReservationRESToutputDTO>> GetReservations(int customerId, [FromQuery] DateTime? startTime, [FromQuery] DateTime? endTime) {
             try {
-                //if (date.GetHashCode() == 0) { return BadRequest($"Date hashcode 0"); }
+                DateTime beginDate = new DateTime(1900,01,01);
+                DateTime endDate = new DateTime(2999, 12, 31);
+                if (startTime.GetHashCode() != 0) { beginDate = startTime.Value; }
+                if (endTime.GetHashCode() != 0) { endDate = endTime.Value; }
                 //if (date < DateTime.Now) { return BadRequest($"Date can't be in the past"); }
-                return Ok(MapToREST.MapReservationList(hostURL, _reservationService.GetReservationsOfCustomer(customerId)));
+                return Ok(MapToREST.MapReservationList(hostURL, _reservationService.GetReservationsOfCustomer(customerId, beginDate, endDate)));
             } catch (Exception ex) {
                 return BadRequest($"{nameof(GetReservations)} - {ex.Message}");
             }

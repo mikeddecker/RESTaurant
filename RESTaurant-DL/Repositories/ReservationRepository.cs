@@ -124,9 +124,9 @@ namespace RESTaurantDLEF.Repositories {
             ctx.ChangeTracker.Clear();
         }
 
-        public List<Reservation> GetReservationsOfCustomer(int customerId) {
+        public List<Reservation> GetReservationsOfCustomer(int customerId, DateTime beginDate, DateTime endDate) {
             try {
-                return ctx.Reservation.Include(r => r.Restaurant).ThenInclude(r => r.Location).Include(r => r.Customer).ThenInclude(c => c.Location).Include(r => r.Table).Where(r => r.IsDeleted == false && r.Customer.CustomerId == customerId).Select(r => MapToDomain.MapReservation(r)).ToList();
+                return ctx.Reservation.Include(r => r.Restaurant).ThenInclude(r => r.Location).Include(r => r.Customer).ThenInclude(c => c.Location).Include(r => r.Table).Where(r => r.IsDeleted == false && r.Customer.CustomerId == customerId && r.Date > beginDate && r.Date < endDate).Select(r => MapToDomain.MapReservation(r)).ToList();
             } catch (Exception ex) {
                 throw new ReservationRepoException(nameof(GetReservationsOnDate_Table_Reservation), ex);
             } finally {
