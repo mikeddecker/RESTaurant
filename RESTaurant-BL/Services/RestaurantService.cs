@@ -156,7 +156,7 @@ namespace RESTaurantBL.Services {
         public Table GetRestaurantTable(int restaurantId, int tablenumber) {
             try {
                 if (!_restaurantRepo.DoesRestaurantExist(restaurantId)) { throw new RestaurantServiceException($"{nameof(HasRestaurantTableNumber)} - RestaurantIdea does not exist"); }
-                if (!_restaurantRepo.DoesRestaurantExist(tablenumber)) { throw new RestaurantServiceException($"{nameof(HasRestaurantTableNumber)} - Restaurant with id {restaurantId} does not have tablenumber {tablenumber}"); }
+                if (!_restaurantRepo.HasRestaurantTableNumber(restaurantId, tablenumber)) { throw new RestaurantServiceException($"{nameof(HasRestaurantTableNumber)} - Restaurant with id {restaurantId} does not have tablenumber {tablenumber}"); }
                 return _restaurantRepo.GetTableOfRestaurant(restaurantId, tablenumber);
             } catch (RestaurantServiceException) {
                 throw;
