@@ -58,44 +58,20 @@ namespace RESTaurantBL.Services {
             } catch (ReservationServiceException) {
                 throw;
             } catch (Exception ex) {
-                throw new ReservationServiceException(nameof(CanMakeReservation_GetTablenumber), ex);
+                throw new ReservationServiceException(nameof(ArrangeTableNumberOrNull), ex);
             }
         }
 
-        public (bool, int) CanMakeReservation_GetTablenumber(int restaurantId, DateTime date, int seats) {
+        public Table? ArrangeTableNumberOrNull(int restaurantId, DateTime date, int seats) {
             try {
-                if (restaurantId <= 0) { throw new ReservationServiceException($"{nameof(CanMakeReservation_GetTablenumber)} - Invalid restaurantId"); }
-                if (date < DateTime.Now) { throw new ReservationServiceException($"{nameof(CanMakeReservation_GetTablenumber)} - Reservations must be in the future"); }
-                if (seats <= 0) { throw new ReservationServiceException($"{nameof(CanMakeReservation_GetTablenumber)} - Seats must be positive"); }
-
-                TimeSpan halfHourEarlier = date.AddMinutes(-30).TimeOfDay;
-                TimeSpan oneHourEarlier = date.AddHours(-1).TimeOfDay;
-
-                Dictionary<int, int> tableSeats = _restaurantRepository.GetTablesOfRestaurant(restaurantId);
-                int amountOfTables = tableSeats.Count();
-                tableSeats = tableSeats.Where(t => t.Value >= seats).OrderBy(t => t.Value).ToDictionary(t => t.Key, t => t.Value);
-                Dictionary<int, Reservation> reservations = _reservationRepository.GetReservationsOnDate_Table_Reservation(restaurantId, date);
-
-                // check if all tables for that date are reserved
-                if (amountOfTables == reservations.Count()) {
-                    return (false, 0);
-                } else {
-                    // Not all tables are reserved
-                    foreach (int tablenumber in tableSeats.Keys) {
-                        // Does the table already contain a reservation on this hour?
-                        // If not, return tablenumber
-                        if (!reservations.ContainsKey(tablenumber)) {
-                            return (true, tablenumber);
-                        }
-                    }
-                }
-
-                return (false, 0);
-
+                if (restaurantId <= 0) { throw new ReservationServiceException($"{nameof(ArrangeTableNumberOrNull)} - Invalid restaurantId"); }
+                if (date < DateTime.Now) { throw new ReservationServiceException($"{nameof(ArrangeTableNumberOrNull)} - Reservation-arrangements must be in the future"); }
+                if (seats <= 0) { throw new ReservationServiceException($"{nameof(ArrangeTableNumberOrNull)} - Seats must be positive"); }
+                return _reservationRepository.ArrangeBestFitTableOrNull(restaurantId, date, seats);
             } catch (ReservationServiceException) {
                 throw;
             } catch (Exception ex) {
-                throw new ReservationServiceException(nameof(CanMakeReservation_GetTablenumber), ex);
+                throw new ReservationServiceException(nameof(ArrangeTableNumberOrNull), ex);
             }
         }
 
@@ -125,73 +101,44 @@ namespace RESTaurantBL.Services {
             }
         }
 
-        private Table CheckForSmallerTable(Reservation reservation, int seats) {
-            // Returns the same table if there are no changes
-            try {
-                (bool, int) canReserveTable = CanMakeReservation_GetTablenumber(reservation.Restaurant.RestaurantId, reservation.Date, seats);
-                if (canReserveTable.Item1) {
-                    // Another table available?
-                    Table table = _restaurantRepository.GetTableOfRestaurant(reservation.Restaurant.RestaurantId, canReserveTable.Item2);
-                    return table.Seats < reservation.Table.Seats ? table : reservation.Table;
-                } else {
-                    // No other table available
-                    return reservation.Table;
-                }
-
-            } catch (ReservationServiceException) {
-                throw;
-            } catch (Exception ex) {
-                throw new ReservationServiceException(nameof(CheckForSmallerTable), ex);
-            }
-        }
-
         public Reservation UpdateReservation(int reservationId, DateTime? date, int? seats) {
             try {
-                if (!seats.HasValue && !date.HasValue) { throw new ReservationServiceException($"{nameof(UpdateReservation)} - Bothe date and seats are null"); }
+                if (!seats.HasValue && !date.HasValue) { throw new ReservationServiceException($"{nameof(UpdateReservation)} - Both date and seats are null, one of them must be filled in"); }
                 if (reservationId <= 0) { throw new ReservationServiceException($"{nameof(UpdateReservation)} - Invalid reservationId"); }
+                // So perhaps we are gonna change something
+                Reservation reservationDB = _reservationRepository.GetReservation(reservationId);
+                DateTime perhapsOtherReservationDate = date.HasValue ? date.Value : reservationDB.Date;
+                int maybeMoreOrLessSeats = seats.HasValue ? seats.Value : reservationDB.Seats;
+
+                // Valid information?
+                if (reservationDB.Date < DateTime.Now && date.HasValue) { throw new ReservationServiceException($"{nameof(UpdateReservation)} - a reservation in the past can not change it's date"); }
                 if (date.HasValue && date.Value.GetHashCode() == 0) { throw new ReservationServiceException($"{nameof(UpdateReservation)} - date hashcode 0"); }
                 if (date.HasValue && date.Value < DateTime.Now) { throw new ReservationServiceException($"{nameof(UpdateReservation)} - date must be in the future"); }
                 if (seats.HasValue && seats.Value <= 0) { throw new ReservationServiceException($"{nameof(UpdateReservation)} - seats must be more than 0"); }
 
-                // checking if there are changes
-                bool isGonnaChange = false;
-                Reservation reservationDB = _reservationRepository.GetReservation(reservationId);
-                if (date.HasValue && reservationDB.Date != date.Value) { isGonnaChange = true; }
-                if (seats.HasValue && reservationDB.Seats != seats.Value) { isGonnaChange = true; }
-                if (!isGonnaChange) {
-                    throw new ReservationServiceException($"{nameof(UpdateReservation)} - No update");
-                } else {
-                    // First scenario: only seats changed
-                    if (!date.HasValue) {
-                        // That means, seats have changed
-                        // if date hasn't changed and more seats asked than initial and the reserved table still has seats left, just update the seats amount of reservation
-                        if (seats.Value > reservationDB.Seats && reservationDB.Table.Seats >= seats.Value) {
-                            // More customers, but still at the same table
-                            return _reservationRepository.UpdateReservation_OtherCustomerAmountStillAtTheSameTable(reservationId, seats.Value);
-                        } else {
-                            // Less people at the table, date is the same
-                            Table table = CheckForSmallerTable(reservationDB, seats.Value); // always returns a table.
-                            if (table.Seats < reservationDB.Table.Seats) {
-                                return _reservationRepository.UpdateReservation(reservationId, date, seats, table.TableNumber);
-                            } else {
-                                // less customers, but still the same table
-                                return _reservationRepository.UpdateReservation_OtherCustomerAmountStillAtTheSameTable(reservationId, seats.Value);
-                            }
-                        }
-                    } else {
-                        // Date changed, so let's also just get another table
-                        DateTime canMakeReservationDate = date.HasValue ? date.Value : reservationDB.Date;
-                        int canMakeReservationSeats = seats.HasValue ? seats.Value : reservationDB.Seats;
-                        (bool, int) canReserveTable = CanMakeReservation_GetTablenumber(reservationDB.ReservationId, canMakeReservationDate, canMakeReservationSeats);
+                // Is there change in the reservation?
+                if (reservationDB.Date == perhapsOtherReservationDate && reservationDB.Seats == maybeMoreOrLessSeats) { throw new ReservationServiceException($"{nameof(UpdateReservation)} - No update, date and amount of seats still remain the same"); }
 
-                        if (canReserveTable.Item1) {
-                            return _reservationRepository.UpdateReservation(reservationId, date, seats, canReserveTable.Item2);
-                        } else {
-                            throw new ReservationServiceException($"{nameof(UpdateReservation)} - Can't find a table for {canMakeReservationSeats} on {canMakeReservationDate} at {reservationDB.Restaurant.Name}");
-                        }
+                // Arrange table, throw exception if there aren't other tables
+                Table arrangedTable = _reservationRepository.ArrangeBestFitTableOrNull(reservationDB.Restaurant.RestaurantId, perhapsOtherReservationDate, maybeMoreOrLessSeats) ?? throw new ReservationServiceException($"{nameof(UpdateReservation)} - No other table avaible");
+
+                // We have another table
+                if (arrangedTable.Seats != reservationDB.Table.Seats) {
+                    // What could still go wrong?
+                    // All tables for 4 people are occupied, and we want to reserve 4 seats and already have a table of 4 seats, but get a table arraged for 5, we don't want it.
+                    // So if the new amount of seats don't fit at the current table && arrangedTable has more seats, we change it
+                    // if the arranged table has less seats, we change it anyway
+                    if (arrangedTable.Seats < reservationDB.Table.Seats) {
+                        reservationDB.SetTable(arrangedTable);
+                    } else if (arrangedTable.Seats > reservationDB.Table.Seats && maybeMoreOrLessSeats > reservationDB.Table.Seats) {
+                        reservationDB.SetTable(arrangedTable);
                     }
-                }
-                //return _reservationRepository.UpdateReservation(reservationId, date, seats);
+                } // The same table is still appropriate if the new arranged table has the same amount of seats
+
+                // Updating reservationDB
+                reservationDB.SetDate(perhapsOtherReservationDate);
+                reservationDB.SetSeats(maybeMoreOrLessSeats);
+                return _reservationRepository.UpdateReservation(reservationDB);
             } catch (ReservationServiceException) {
                 throw;
             } catch (Exception ex) {
@@ -199,8 +146,7 @@ namespace RESTaurantBL.Services {
             }
         }
 
-        public List<Reservation> GetReservations(int restaurantId, DateTime? day, DateTime? endDate
-            ) {
+        public List<Reservation> GetReservations(int restaurantId, DateTime? day, DateTime? endDate) {
             try {
                 if (day == null && endDate.HasValue) { throw new ReservationServiceException($"{nameof(GetReservations)} - Day must be filled in if endDate is filled in"); }
                 return _reservationRepository.GetReservations(restaurantId, day, endDate);

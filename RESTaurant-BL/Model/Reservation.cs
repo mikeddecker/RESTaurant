@@ -96,5 +96,14 @@ namespace RESTaurantBL.Model {
             _isCanceled = canceled;
         }
 
+        public bool HasTheSameProperties(Reservation reservation) {
+            return _reservationId == reservation._reservationId &&
+                   _restaurant.Equals(reservation._restaurant) &&
+                   _customer.Equals(reservation._customer) &&
+                   _seats == reservation._seats &&
+                   _date == reservation._date &&
+                   _table.Equals(reservation._table) &&
+                   _isCanceled == reservation._isCanceled;
+        }
     }
 }

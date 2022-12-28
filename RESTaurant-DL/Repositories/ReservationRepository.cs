@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Table = RESTaurantBL.Model.Table;
 
 namespace RESTaurantDLEF.Repositories {
     public class ReservationRepository : IReservationRepository {
@@ -21,9 +22,9 @@ namespace RESTaurantDLEF.Repositories {
 
         public Reservation AddReservation(Reservation reservation) {
             try {
-                RestaurantEF restaurantEF = ctx.Restaurant.Single(r => r.RestaurantId == reservation.Restaurant.RestaurantId);
-                CustomerEF customerEF = ctx.Customer.Single(c => c.CustomerId == reservation.Customer.CustomerId);
-                TableEF tableEF = ctx.Table.Single(t => t.RestaurantId == reservation.Restaurant.RestaurantId && t.Tablenumber == reservation.Table.TableNumber);
+                RestaurantEF restaurantEF = ctx.Restaurant.Single(r => r.RestaurantId == reservation.Restaurant.RestaurantId && r.IsDeleted == false);
+                CustomerEF customerEF = ctx.Customer.Single(c => c.CustomerId == reservation.Customer.CustomerId && c.IsDeleted == false);
+                TableEF tableEF = ctx.Table.Single(t => t.RestaurantId == reservation.Restaurant.RestaurantId && t.Tablenumber == reservation.Table.TableNumber && t.IsDeleted == false);
                 //TableEF tableEF = ctx.Table.Single()
                 ReservationEF reservationEF = new ReservationEF(restaurantEF, customerEF, tableEF, reservation.Seats, reservation.Date);
                 ctx.Reservation.Add(reservationEF);
@@ -52,7 +53,7 @@ namespace RESTaurantDLEF.Repositories {
                 // Checking if a customer doesn't already have a reservation with another restaurant
                 DateTime halfHourEarlier = reservation.Date.Add(new TimeSpan(0, -30, 0));
                 DateTime oneHourEarlier = reservation.Date.Add(new TimeSpan(-1, 0, 0));
-                return ctx.Reservation.Any(r => r.Table.Tablenumber == reservation.Table.TableNumber && r.Customer.CustomerId == reservation.Customer.CustomerId && (reservation.Date == r.Date || reservation.Date == halfHourEarlier || reservation.Date == oneHourEarlier));
+                return ctx.Reservation.Any(r => r.IsDeleted == false && r.Table.Tablenumber == reservation.Table.TableNumber && r.Customer.CustomerId == reservation.Customer.CustomerId && (reservation.Date == r.Date || reservation.Date == halfHourEarlier || reservation.Date == oneHourEarlier));
             } catch (Exception ex) {
                 throw new ReservationRepoException(nameof(DoesReservationOverlapCustomer), ex);
             } finally {
@@ -64,7 +65,7 @@ namespace RESTaurantDLEF.Repositories {
             try {
                 DateTime halfHourEarlier = reservation.Date.Add(new TimeSpan(0, -30, 0));
                 DateTime oneHourEarlier = reservation.Date.Add(new TimeSpan(-1, 0, 0));
-                return ctx.Reservation.Any(r => r.Table.Tablenumber == reservation.Table.TableNumber && r.Restaurant.RestaurantId == reservation.Restaurant.RestaurantId && (reservation.Date == r.Date || reservation.Date == halfHourEarlier || reservation.Date == oneHourEarlier));
+                return ctx.Reservation.Any(r => r.IsDeleted == false && r.Table.Tablenumber == reservation.Table.TableNumber && r.Restaurant.RestaurantId == reservation.Restaurant.RestaurantId && (reservation.Date == r.Date || reservation.Date == halfHourEarlier || reservation.Date == oneHourEarlier));
             } catch (Exception ex) {
                 throw new ReservationRepoException(nameof(DoesReservationOverlapTable), ex);
             } finally {
@@ -129,7 +130,7 @@ namespace RESTaurantDLEF.Repositories {
             try {
                 return ctx.Reservation.Include(r => r.Restaurant).ThenInclude(r => r.Location).Include(r => r.Customer).ThenInclude(c => c.Location).Include(r => r.Table).Where(r => r.IsDeleted == false && r.Customer.CustomerId == customerId && r.Date > beginDate && r.Date < endDate).Select(r => MapToDomain.MapReservation(r)).ToList();
             } catch (Exception ex) {
-                throw new ReservationRepoException(nameof(GetReservationsOnDate_Table_Reservation), ex);
+                throw new ReservationRepoException(nameof(GetReservationsOfCustomer), ex);
             } finally {
                 SaveAndClear();
             }
@@ -165,27 +166,16 @@ namespace RESTaurantDLEF.Repositories {
             }
         }
 
-        public Reservation UpdateReservation(int reservationId, DateTime? date, int? seats, int tableNr) {
+        public Reservation UpdateReservation(Reservation reservation) {
             try {
-                ReservationEF reservationEF = ctx.Reservation.Include(r => r.Restaurant).ThenInclude(r => r.Location).Include(r => r.Customer).ThenInclude(c => c.Location).Include(r => r.Table).Single(r => r.ReservationId == reservationId);
-                if (date.HasValue) { reservationEF.Date = date.Value; }
-                if (seats.HasValue) { reservationEF.Seats = seats.Value; }
-                if (reservationEF.Table.Tablenumber != tableNr) { reservationEF.Table = ctx.Table.Single(t => t.Tablenumber == tableNr && reservationEF.Restaurant.RestaurantId == t.RestaurantId && t.IsDeleted == false); }
+                ReservationEF reservationEFDB = ctx.Reservation.Include(r => r.Restaurant).ThenInclude(r => r.Location).Include(r => r.Customer).ThenInclude(c => c.Location).Include(r => r.Table).Single(r => r.ReservationId == reservation.ReservationId && r.IsDeleted == false && r.IsCanceled == false);
+                if (reservation.Date != reservationEFDB.Date) { reservationEFDB.Date = reservation.Date; }
+                if (reservation.Seats != reservationEFDB.Seats) { reservationEFDB.Seats = reservation.Seats; }
+                if (reservation.Table.TableNumber != reservationEFDB.Table.Tablenumber) { reservationEFDB.Table = ctx.Table.Single(t => t.Tablenumber == reservation.Table.TableNumber && reservation.Restaurant.RestaurantId == t.RestaurantId && t.IsDeleted == false); }
                 SaveAndClear();
-                return MapToDomain.MapReservation(reservationEF);
+                return MapToDomain.MapReservation(reservationEFDB);
             } catch (Exception ex) {
-                throw new ReservationRepoException(nameof(GetReservation), ex);
-            }
-        }
-
-        public Reservation UpdateReservation_OtherCustomerAmountStillAtTheSameTable(int reservationId, int seats) {
-            try {
-                ReservationEF reservationEF = ctx.Reservation.Include(r => r.Restaurant).ThenInclude(r => r.Location).Include(r => r.Customer).ThenInclude(c => c.Location).Include(r => r.Table).Include(r => r.Table).Single(r => r.ReservationId == reservationId);
-                reservationEF.Seats = seats;
-                SaveAndClear();
-                return MapToDomain.MapReservation(reservationEF);
-            } catch (Exception ex) {
-                throw new ReservationRepoException(nameof(UpdateReservation_OtherCustomerAmountStillAtTheSameTable), ex);
+                throw new ReservationRepoException(nameof(UpdateReservation), ex);
             }
         }
 
@@ -194,8 +184,23 @@ namespace RESTaurantDLEF.Repositories {
                 DateTime minDate = day.HasValue ? day.Value : DateTime.Today;
                 DateTime maxDate = endDate.HasValue ? endDate.Value : DateTime.Today.AddDays(3650); // Whou would be crazy enough to reserve 10 years into the future? 
                 return ctx.Reservation.Include(r => r.Restaurant.Location).Include(r => r.Table).Include(r => r.Customer.Location).Where(r => r.Restaurant.RestaurantId == restaurantId && r.IsCanceled == false && r.IsDeleted == false && r.Date >= minDate && r.Date <= maxDate).Select(r => MapToDomain.MapReservation(r)).ToList();
-            } catch (Exception ex)  {
+            } catch (Exception ex) {
                 throw new ReservationRepoException(nameof(GetReservations), ex);
+            }
+        }
+
+        public Table? ArrangeBestFitTableOrNull(int restaurantId, DateTime reservationTime, int seats) {
+            try {
+                DateTime minTime = reservationTime.AddMinutes(-90);
+                DateTime maxTime = reservationTime.AddMinutes(90);
+                List<TableEF> restaurantTables = ctx.Table.AsNoTracking().Where(t => t.RestaurantId == restaurantId && t.IsDeleted == false).OrderBy(t => t.Seats).ToList();
+                Dictionary<int, TableEF> reservedTablesOfRestaurantAtReservationTime = ctx.Reservation.Include(r => r.Table).AsNoTracking().Where(r => r.IsDeleted == false && r.IsCanceled ==false && r.Restaurant.RestaurantId == restaurantId && r.Date > minTime && r.Date < maxTime).Select(r => r.Table).AsNoTracking().ToDictionary(t => t.Tablenumber, t => t);
+                foreach (TableEF tableEF in restaurantTables) {
+                    if (tableEF.Seats >= seats && !reservedTablesOfRestaurantAtReservationTime.ContainsKey(tableEF.Tablenumber)) { return MapToDomain.MapTable(tableEF); }
+                }
+                return null;
+            } catch (Exception ex) {
+                throw new ReservationRepoException(nameof(ArrangeBestFitTableOrNull), ex);
             }
         }
     }

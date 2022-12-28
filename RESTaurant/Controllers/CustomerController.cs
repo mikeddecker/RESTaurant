@@ -6,6 +6,8 @@ using RESTaurant.Mappers;
 using RESTaurantBL.Model;
 using RESTaurantBL.Services;
 using RESTaurantDLEF.EFModel;
+using System.Reflection.Metadata.Ecma335;
+using RESTaurant.Exceptions;
 
 namespace RESTaurant.Controllers {
     [Route("api/[controller]")]
@@ -79,17 +81,16 @@ namespace RESTaurant.Controllers {
         #region Reservation
         [HttpPost]
         [Route("Reservation")]
-        public ActionResult<ReservationRESTinputDTO> AddReservation([FromBody] ReservationRESTinputDTO reservationRESTinput) {
+        public ActionResult<ReservationRESToutputDTO> AddReservation([FromBody] ReservationRESTinputDTO reservationRESTinput) {
             try {
-                (bool, int) reservableTablenumber = _reservationService.CanMakeReservation_GetTablenumber(reservationRESTinput.RestaurantId, reservationRESTinput.Date, reservationRESTinput.Seats);
-                if (!reservableTablenumber.Item1) {
-                    Restaurant restaurant = _restaurantService.GetRestaurant(reservationRESTinput.RestaurantId);
-                    return BadRequest($"Can't make a reservation on {reservationRESTinput.Date} for {reservationRESTinput.Seats} at {restaurant.Name} ");
-                }
-                int tableNumber = reservableTablenumber.Item2; //_reservationService.GetTableForReservation(reservationRESTinput.RestaurantId, reservationRESTinput.Date, reservationRESTinput.Seats);
-                Reservation reservation = _reservationService.AddReservation(MapToDomain.MapReservation(reservationRESTinput, tableNumber, _customerService, _restaurantService));
+                Table reservableTable = _reservationService.ArrangeTableNumberOrNull(reservationRESTinput.RestaurantId, reservationRESTinput.Date, reservationRESTinput.Seats) ?? throw new CustomerControllerException($"Can't make a reservation on {reservationRESTinput.Date} for {reservationRESTinput.Seats} at {_restaurantService.GetRestaurant(reservationRESTinput.RestaurantId).Name}");
+
+                Reservation reservation = _reservationService.AddReservation(MapToDomain.MapReservation(reservationRESTinput, reservableTable.TableNumber, _customerService, _restaurantService));
                 return CreatedAtAction(nameof(AddReservation), new { ReservationId = reservation.ReservationId }, MapToREST.MapReservation(hostURL, reservation));
-            } catch (Exception ex) {
+            } catch (CustomerControllerException ex) {
+                return NotFound($"{nameof(AddCustomer)} - {ex.Message}");
+            } 
+            catch (Exception ex) {
                 return BadRequest($"{nameof(AddCustomer)} - {ex.Message}");
             }
         }
