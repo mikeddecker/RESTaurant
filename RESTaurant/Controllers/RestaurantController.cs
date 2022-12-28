@@ -13,9 +13,11 @@ namespace RESTaurant.Controllers {
     public class RestaurantController : ControllerBase {
         private string hostURL = "http://localhost:5298/api/Restaurant";
         private RestaurantService restaurantService;
+        private ReservationService reservationService;
 
-        public RestaurantController(RestaurantService restaurantService) {
+        public RestaurantController(RestaurantService restaurantService, ReservationService reservationService) {
             this.restaurantService = restaurantService;
+            this.reservationService = reservationService;
         }
 
         #region RestaurantInfo
@@ -125,6 +127,18 @@ namespace RESTaurant.Controllers {
                 return NoContent();
             } catch (Exception ex) {
                 return BadRequest(ex.Message);
+            }
+        }
+        #endregion
+        #region Reservations
+        [HttpGet("{restaurantId}/Reservations")]
+        public ActionResult<List<ReservationRESToutputDTO>> GetReservations(int restaurantId, [FromQuery]DateTime? day, [FromQuery]DateTime? endDate) {
+            try {
+                List<Reservation> reservations = reservationService.GetReservations(restaurantId, day, endDate);
+                List<ReservationRESToutputDTO> reservationListRESToutputs = MapToREST.MapReservationList(hostURL, reservations);
+                return Ok(reservationListRESToutputs);
+            } catch (Exception ex) {
+                return NotFound(ex.Message);
             }
         }
         #endregion

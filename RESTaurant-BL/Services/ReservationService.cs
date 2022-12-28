@@ -198,5 +198,17 @@ namespace RESTaurantBL.Services {
                 throw new ReservationServiceException(nameof(UpdateReservation), ex);
             }
         }
+
+        public List<Reservation> GetReservations(int restaurantId, DateTime? day, DateTime? endDate
+            ) {
+            try {
+                if (day == null && endDate.HasValue) { throw new ReservationServiceException($"{nameof(GetReservations)} - Day must be filled in if endDate is filled in"); }
+                return _reservationRepository.GetReservations(restaurantId, day, endDate);
+            } catch (ReservationServiceException) {
+                throw;
+            } catch (Exception ex) {
+                throw new ReservationServiceException(nameof(GetReservations), ex);
+            }
+        }
     }
 }
