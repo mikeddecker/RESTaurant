@@ -60,7 +60,6 @@ namespace RESTaurantBL.Model {
         public void SetKitchen(string kitchentype) {
             if (string.IsNullOrWhiteSpace(kitchentype)) { throw new RestaurantException("SetKitchen - No kitchentype filled in"); }
             kitchentype = kitchentype.Trim();
-            if (!RestaurantService.GetKitchenTypes().Contains(kitchentype)) { throw new RestaurantException("SetKitchen - Kitchentype not recognized"); }
             _kitchen = kitchentype;
         }
         public void SetEmail(string email) {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RESTaurantDLEF.Exceptions {
-    internal class CustomerRepoException : Exception {
+    public class CustomerRepoException : Exception {
         public CustomerRepoException(string? message) : base(message) {
         }
 

@@ -27,6 +27,7 @@ namespace RESTaurant.Controllers {
             _logger = loggerFactory.AddFile("CustomerLogs.txt").CreateLogger("CustomerLogger");
         }
 
+
         #region Customer
         [HttpPost]
         public ActionResult<CustomerRESToutputDTO> AddCustomer([FromBody] CustomerRESTinputDTO customerRESTinput) {
@@ -57,8 +58,14 @@ namespace RESTaurant.Controllers {
         public ActionResult<CustomerRESToutputDTO> GetCustomer(int customerId) {
             try {
                 _logger.LogInformation($"{nameof(GetCustomer)}, {customerId}");
-                if (customerId <= 0) { return BadRequest($"{nameof(GetCustomer)} - Invalid CustomerId"); }
-                if (!_customerService.DoesCustomerExist(customerId)) { return NotFound($"{nameof(GetCustomer)} - Customer does not exist"); }
+                if (customerId <= 0) { 
+                    _logger.LogError($"{nameof(GetCustomer)} - Invalid CustomerId");
+                    return BadRequest($"{nameof(GetCustomer)} - Invalid CustomerId"); 
+                }
+                if (!_customerService.DoesCustomerExist(customerId)) {
+                    _logger.LogError($"{nameof(GetCustomer)} - {customerId} not found");
+                    return NotFound($"{nameof(GetCustomer)} - {customerId} not found");
+                }
                 return Ok(MapToREST.MapCustomer(hostURL, _customerService.GetCustomer(customerId)));
             } catch (Exception ex) {
                 _logger.LogError($"{nameof(GetCustomer)} - {ex.Message}");
@@ -79,7 +86,7 @@ namespace RESTaurant.Controllers {
         }
 
         [HttpDelete("Goodbye/{customerId}")]
-        public IActionResult DeleteCustomer(int customerId) {
+        public ActionResult DeleteCustomer(int customerId) {
             try {
                 _logger.LogInformation($"{nameof(DeleteCustomer)}, {customerId}");
                 if (customerId <= 0) { return BadRequest($"{nameof(DeleteCustomer)} - Invalid customerId"); }
@@ -123,8 +130,6 @@ namespace RESTaurant.Controllers {
                 }
                 if (postalCode.HasValue) {
                     if (postalCode.Value > 9999 || postalCode.Value < 1000) { return BadRequest($"Invalid postal code {postalCode}"); }
-                } else if (!string.IsNullOrWhiteSpace(kitchen)) {
-
                 }
                 if (string.IsNullOrWhiteSpace(kitchen) && !postalCode.HasValue) {
                     return Ok(MapToREST.MapRestaurantList(hostURL, _restaurantService.GetRestaurants()));
@@ -156,7 +161,7 @@ namespace RESTaurant.Controllers {
 
         [HttpPut]
         [Route("Reservation/{reservationId}")]
-        public IActionResult UpdateReservation(int reservationId, [FromQuery] DateTime? date, [FromQuery] int? seats) {
+        public ActionResult<ReservationRESToutputDTO> UpdateReservation(int reservationId, [FromQuery] DateTime? date, [FromQuery] int? seats) {
             try {
                 _logger.LogInformation($"{nameof(UpdateReservation)}, {reservationId}, {date}, {seats}");
                 // At least one shoulde be filled in

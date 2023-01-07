@@ -9,7 +9,7 @@ Console.WriteLine("Hello, World!");
 
 string connectionstring = "Data Source=LAPTOP-BFPIKR71\\SQLEXPRESS;Initial Catalog=RESTaurant;Integrated Security=True; TrustServerCertificate=True";
 RestaurantContext db = new RestaurantContext(connectionstring);
-RestaurantService restaurantService = new RestaurantService(new RestaurantRepository(connectionstring));
+RestaurantService restaurantService = new RestaurantService(new RestaurantRepository(connectionstring), new ConfigRepo());
 List<Restaurant> restaurants = restaurantService.GetRestaurants();
 db.Database.EnsureDeleted();
 db.Database.EnsureCreated();

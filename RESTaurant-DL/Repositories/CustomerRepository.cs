@@ -32,7 +32,7 @@ namespace RESTaurantDLEF.Repositories {
                 CustomerEF cEF = MapToDB.MapCustomer(customer);
                 return ctx.Customer.Any(c => c.IsDeleted == false && c.Email == cEF.Email && c.Name == cEF.Name);
             } catch (Exception ex) {
-                throw new RestaurantRepoException(nameof(DoesCustomerExist), ex);
+                throw new CustomerRepoException(nameof(DoesCustomerExist), ex);
             } finally {
                 SaveAndClear();
             }

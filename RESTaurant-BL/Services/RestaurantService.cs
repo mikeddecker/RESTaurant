@@ -13,18 +13,21 @@ using System.Threading.Tasks;
 namespace RESTaurantBL.Services {
     public class RestaurantService {
         private IRestaurantRepository _restaurantRepo;
+        private IConfigurationWrapper _configWrapper;
 
-        public RestaurantService(IRestaurantRepository restaurantRepo) {
+        public RestaurantService(IRestaurantRepository restaurantRepo, IConfigurationWrapper configWrapper) {
             _restaurantRepo = restaurantRepo;
+            _configWrapper = configWrapper;
         }
 
         #region KitchenTypes
-        public static List<string> GetKitchenTypes() {
-            return new List<string>(ConfigurationManager.AppSettings["kitchenTypes"].Split(';'));
+        public List<string> GetKitchenTypes() {
+            return _configWrapper.GetKitchenTypes();
         }
+
         public bool ContainsKitchenType(string kitchen) {
             try {
-                return GetKitchenTypes().Contains(kitchen);
+                return _configWrapper.ContainsKitchenType(kitchen);
             } catch (RestaurantServiceException) {
                 throw;
             } catch (Exception ex) {

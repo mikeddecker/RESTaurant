@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RESTaurantDLEF.Exceptions
 {
-    internal class RestaurantRepoException : Exception
+    public class RestaurantRepoException : Exception
     {
         public RestaurantRepoException(string? message) : base(message)
         {

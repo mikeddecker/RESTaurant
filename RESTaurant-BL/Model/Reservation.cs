@@ -88,6 +88,8 @@ namespace RESTaurantBL.Model {
 
             // New reservations must be today or in the future, old reservations can be in the past
             if (_reservationId == 0 && DateTime.Now > date) { throw new ReservationException($"{nameof(SetDate)} - New reservations must be in the future"); }
+
+            //if (date.Minute % 30 != 0 || date.Date.Second % 30 != 0) { throw new ReservationException($"{nameof(SetDate)} - Reservation time must be at 00 or at 30 minutes"); }
             _date = date;
         }
 

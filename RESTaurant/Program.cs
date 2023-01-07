@@ -16,6 +16,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IRestaurantRepository>(r => new RestaurantRepository(connectionstring));
 builder.Services.AddSingleton<ICustomerRepository>(c => new CustomerRepository(connectionstring));
 builder.Services.AddSingleton<IReservationRepository>(r => new ReservationRepository(connectionstring));
+builder.Services.AddSingleton<IConfigurationWrapper>(c => new ConfigRepo());
 builder.Services.AddSingleton<RestaurantService>();
 builder.Services.AddSingleton<CustomerService>();
 builder.Services.AddSingleton<ReservationService>();

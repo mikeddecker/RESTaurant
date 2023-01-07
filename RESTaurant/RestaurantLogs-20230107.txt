@@ -330,3 +330,4 @@
 2023-01-07T15:31:34.9392940+01:00 0HMNGN5MU7AL7:0000002C [INF] AddReservation, ReservationRESTinputDTO, 3, 4, 4, 12/01/2023 16:30:00 (e7efdc7d)
 2023-01-07T15:31:34.9401281+01:00 0HMNGN5MU7AL7:0000002C [INF] AddReservation, ReservationRESTinputDTO, 3, 4, 4, 12/01/2023 16:30:00 (e7efdc7d)
 2023-01-07T15:31:34.9409702+01:00 0HMNGN5MU7AL7:0000002C [INF] AddReservation, ReservationRESTinputDTO, 3, 4, 4, 12/01/2023 16:30:00 (e7efdc7d)
+2023-01-07T16:45:20.0957562+01:00  [INF] AddRestaurant, RestaurantRESTinputDTO, Pizza Cleophas, info@cleophas.be, +3252331012, italian, LocationRESTinputDTO, 9200, St-Gillis, string, string (30f4791e)

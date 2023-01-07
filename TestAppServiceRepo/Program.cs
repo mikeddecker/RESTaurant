@@ -8,7 +8,7 @@ Console.WriteLine("Hello, World!");
 string connectionstring = "Data Source=LAPTOP-BFPIKR71\\SQLEXPRESS;Initial Catalog=RESTaurant;Integrated Security=True; TrustServerCertificate=True";
 IRestaurantRepository restaurantRepo = new RestaurantRepository(connectionstring);
 IReservationRepository reservationRepository = new ReservationRepository(connectionstring);
-RestaurantService restaurantService = new RestaurantService(restaurantRepo);
+RestaurantService restaurantService = new RestaurantService(restaurantRepo, new ConfigRepo());
 ReservationService reservationService = new ReservationService(reservationRepository, restaurantRepo);
 
 //foreach (string kitchenType in RestaurantService.GetKitchenTypes())

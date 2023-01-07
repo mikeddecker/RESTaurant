@@ -32,6 +32,9 @@ namespace RESTaurant.Mappers {
                 if (reservationRESTinput == null) { throw new MapException($"{nameof(MapReservation)} - Reservation is null"); }
                 if (reservationRESTinput.RestaurantId <= 0) { throw new MapException($"{nameof(MapReservation)} - Invalid RestaurantId"); }
                 if (reservationRESTinput.CustomerId <= 0) { throw new MapException($"{nameof(MapReservation)} - Invalid CustomerId"); }
+
+                // Yes i double check the date here insteady of waiting for the reservation to make the check, this because we do repo calls which could be slower.
+                //if (reservationRESTinput.Date.Minute % 30 != 0 || reservationRESTinput.Date.Second % 30 != 0) { throw new MapException($"{nameof(MapReservation)} - Reservation time must be at 00 or at 30 minutes"); }
                 Restaurant restaurant = restaurantService.GetRestaurant(reservationRESTinput.RestaurantId);
                 Customer customer = customerService.GetCustomer(reservationRESTinput.CustomerId);
                 Table table = restaurantService.GetTable(restaurant.RestaurantId, tableNumber);

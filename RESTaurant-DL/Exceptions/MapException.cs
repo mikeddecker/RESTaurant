@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RESTaurantDLEF.Exceptions
 {
-    internal class MapException : Exception
+    public class MapException : Exception
     {
         public MapException(string? message) : base(message)
         {
