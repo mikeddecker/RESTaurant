@@ -16,10 +16,10 @@ namespace RESTaurantBL.Interfaces {
         void DeleteRestaurant(int restaurantId);
         bool HasRestaurantTableNumber(int restaurantId, int tableNumber);
         void AddTableToRestaurant(int restaurantId, int tableNumber, int seats);
-        Dictionary<int, int> GetTablesOfRestaurant(int restaurantId);
-        void DeleteTableOfRestaurant(int restaurantId, int tablenumber);
-        void UpdateTableOfRestaurant(int restaurantId, int tableNumber, int seats);
-        Table GetTableOfRestaurant(int restaurantId, int tableNumber);
-        List<Restaurant> GetRestaurants(string kitchen, int? postalCode);
+        Dictionary<int, int> GetTables(int restaurantId);
+        void DeleteTable(int restaurantId, int tablenumber);
+        void UpdateTable(int restaurantId, int tableNumber, int seats);
+        Table GetTable(int restaurantId, int tableNumber);
+        List<Restaurant> GetRestaurants(string? kitchen, int? postalCode);
     }
 }

@@ -73,7 +73,7 @@ namespace RESTaurantDLEF.Repositories {
             }
         }
 
-        public List<Restaurant> GetAvailableRestaurants(DateTime date) {
+        public List<Restaurant> GetReservableRestaurants(DateTime date) {
             try {
                 List<Restaurant> restaurantsWithATableAvailable = new List<Restaurant>();
 

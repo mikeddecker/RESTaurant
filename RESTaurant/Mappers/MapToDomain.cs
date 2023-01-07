@@ -1,8 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using RESTaurant.Exceptions;
+﻿using RESTaurant.Exceptions;
 using RESTaurant.Model.Input;
 using RESTaurantBL.Model;
-using RESTaurant.Model.Input;
 using RESTaurantBL.Services;
 
 namespace RESTaurant.Mappers {
@@ -12,7 +10,7 @@ namespace RESTaurant.Mappers {
                 Location location = MapLocation(customerRESTinput.Location);
                 return new Customer(customerRESTinput.Name, customerRESTinput.Email, customerRESTinput.Phone, location);
             } catch (Exception ex) {
-                throw new MapException(nameof(MapCustomer), ex);
+                throw new MapException($"{nameof(MapCustomer)}, {ex.Message}");
             }
         }
 
@@ -24,7 +22,7 @@ namespace RESTaurant.Mappers {
             } catch (MapException) {
                 throw;
             } catch (Exception ex) {
-                throw new MapException(nameof(MapCustomer), ex);
+                throw new MapException($"{nameof(MapCustomer)}, {ex.Message}");
             }
         }
 
@@ -36,8 +34,7 @@ namespace RESTaurant.Mappers {
                 if (reservationRESTinput.CustomerId <= 0) { throw new MapException($"{nameof(MapReservation)} - Invalid CustomerId"); }
                 Restaurant restaurant = restaurantService.GetRestaurant(reservationRESTinput.RestaurantId);
                 Customer customer = customerService.GetCustomer(reservationRESTinput.CustomerId);
-                if (!restaurantService.HasRestaurantTableNumber(reservationRESTinput.RestaurantId, tableNumber)) { throw new MapException($"{nameof(MapReservation)} - Restaurant {restaurant.Name} does not contain a tablenumber {tableNumber}"); }
-                Table table = restaurantService.GetRestaurantTable(restaurant.RestaurantId, tableNumber);
+                Table table = restaurantService.GetTable(restaurant.RestaurantId, tableNumber);
 
                 DateTime date = new DateTime(reservationRESTinput.Date.Year, reservationRESTinput.Date.Month, reservationRESTinput.Date.Day, reservationRESTinput.Date.Hour, reservationRESTinput.Date.Minute, 0);
 
@@ -47,7 +44,7 @@ namespace RESTaurant.Mappers {
             } catch (MapException) {
                 throw;
             } catch (Exception ex) {
-                throw new MapException(nameof(MapReservation), ex);
+                throw new MapException($"{nameof(MapCustomer)}, {ex.Message}");
             }
         }
 
@@ -56,7 +53,7 @@ namespace RESTaurant.Mappers {
                 Location location = MapLocation(restaurantRESTinput.Location);
                 return new Restaurant(restaurantRESTinput.Name, location, restaurantRESTinput.Kitchen.ToLower(), restaurantRESTinput.Email, restaurantRESTinput.Phone);
             } catch (Exception ex) {
-                throw new MapException(nameof(MapRestaurant), ex);
+                throw new MapException($"{nameof(MapCustomer)}, {ex.Message}");
             }
         }
 
@@ -68,7 +65,7 @@ namespace RESTaurant.Mappers {
             } catch (MapException) {
                 throw;
             } catch (Exception ex) {
-                throw new MapException(nameof(MapRestaurant), ex);
+                throw new MapException($"{nameof(MapCustomer)}, {ex.Message}");
             }
         }
 
@@ -79,7 +76,7 @@ namespace RESTaurant.Mappers {
                 if (!string.IsNullOrWhiteSpace(location.Housenumberlabel) && location.Housenumberlabel.ToLower() != "string") { mappedLocation.SetHousenumber(location.Housenumberlabel); }
                 return mappedLocation;
             } catch (Exception ex) {
-                throw new MapException(nameof(MapLocation), ex);
+                throw new MapException($"{nameof(MapCustomer)}, {ex.Message}");
             }
         }
     }

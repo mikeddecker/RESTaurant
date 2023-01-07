@@ -5,17 +5,8 @@ using RESTaurantBL.Services;
 
 namespace RESTaurant.Mappers {
     public class MapToREST {
-        internal static List<RestaurantRESToutputDTO> MapRestaurantList(string hostURL, List<Restaurant> restaurants) {
-            return restaurants.Select(r => MapRestaurant(hostURL, r)).ToList();
-        }
-        internal static RestaurantRESToutputDTO MapRestaurant(string hostURL, Restaurant restaurant) {
-            try {
-                string restaurantURL = $"{hostURL}/{restaurant.RestaurantId}";
-                return new RestaurantRESToutputDTO(restaurantURL, restaurant.Name, MapLocation(restaurant.Location), restaurant.Kitchen, restaurant.Email, restaurant.Phone);
-            } catch (Exception ex) {
-                throw new MapException("MapRestaurant", ex);
-            }
-        }
+
+        #region Singles
 
         private static LocationRESToutputDTO MapLocation(Location location) {
             try {
@@ -25,11 +16,20 @@ namespace RESTaurant.Mappers {
             }
         }
 
+        internal static RestaurantRESToutputDTO MapRestaurant(string hostURL, Restaurant restaurant) {
+            try {
+                string restaurantURL = $"{hostURL}/Restaurant/{restaurant.RestaurantId}";
+                return new RestaurantRESToutputDTO(restaurantURL, restaurant.Name, MapLocation(restaurant.Location), restaurant.Kitchen, restaurant.Email, restaurant.Phone);
+            } catch (Exception ex) {
+                throw new MapException("MapRestaurant", ex);
+            }
+        }
+
         internal static RestaurantDetailRESToutputDTO MapRestaurantDetails(string hostURL, int restaurantId, RestaurantService restaurantService) {
             try {
-                string restaurantURL = $"{hostURL}/{restaurantId}/Details";
+                string restaurantURL = $"{hostURL}/Restaurant/{restaurantId}/Details";
                 Restaurant restaurant = restaurantService.GetRestaurant(restaurantId);
-                return new RestaurantDetailRESToutputDTO(restaurantURL, restaurant.Name, MapLocation(restaurant.Location), restaurant.Kitchen, restaurant.Email, restaurant.Phone, restaurantService.GetTablesOfRestaurant(restaurantId));
+                return new RestaurantDetailRESToutputDTO(restaurantURL, restaurant.Name, MapLocation(restaurant.Location), restaurant.Kitchen, restaurant.Email, restaurant.Phone, restaurantService.GetTables(restaurantId));
 
             } catch (Exception ex) {
                 throw new MapException("MapRestaurant", ex);
@@ -38,18 +38,10 @@ namespace RESTaurant.Mappers {
 
         internal static CustomerRESToutputDTO MapCustomer(string hostURL, Customer customer) {
             try {
-                string customerURL = $"{hostURL}/{customer.CustomerId}";
+                string customerURL = $"{hostURL}/Customer/{customer.CustomerId}";
                 return new CustomerRESToutputDTO(customerURL, customer.Name, customer.Email, customer.PhoneNumber, MapLocation(customer.Location));
             } catch (Exception ex) {
                 throw new MapException(nameof(MapCustomer), ex);
-            }
-        }
-
-        internal static List<CustomerRESToutputDTO> MapCustomerList(string hostURL, List<Customer> customers) {
-            try {
-                return customers.Select(c => MapCustomer(hostURL, c)).ToList();
-            } catch (Exception ex) {
-                throw new MapException($"{nameof(MapCustomerList)} - {ex.Message}");
             }
         }
 
@@ -64,6 +56,22 @@ namespace RESTaurant.Mappers {
             }
         }
 
+        #endregion
+
+        #region Lists
+
+        internal static List<CustomerRESToutputDTO> MapCustomerList(string hostURL, List<Customer> customers) {
+            try {
+                return customers.Select(c => MapCustomer(hostURL, c)).ToList();
+            } catch (Exception ex) {
+                throw new MapException($"{nameof(MapCustomerList)} - {ex.Message}");
+            }
+        }
+
+        internal static List<RestaurantRESToutputDTO> MapRestaurantList(string hostURL, List<Restaurant> restaurants) {
+            return restaurants.Select(r => MapRestaurant(hostURL, r)).ToList();
+        }
+
         internal static List<ReservationRESToutputDTO> MapReservationList(string hostURL, List<Reservation> reservations) {
             try {
                 return reservations.Select(r => MapReservation(hostURL, r)).ToList();
@@ -73,5 +81,7 @@ namespace RESTaurant.Mappers {
                 throw new MapException(nameof(MapReservationList), ex);
             }
         }
+
+        #endregion
     }
 }

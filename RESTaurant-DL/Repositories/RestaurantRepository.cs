@@ -128,7 +128,20 @@ namespace RESTaurantDLEF.Repositories {
             }
         }
 
-        public Dictionary<int, int> GetTablesOfRestaurant(int restaurantId) {
+
+
+
+        public Table GetTable(int restaurantId, int tableNumber) {
+            try {
+                TableEF tableEFDB = ctx.Table.Single(r => r.RestaurantId == restaurantId && r.Tablenumber == tableNumber && r.IsDeleted == false);
+                return MapToDomain.MapTable(tableEFDB);
+            } catch (Exception ex) {
+                throw new RestaurantRepoException(nameof(GetTable), ex);
+            } finally {
+                SaveAndClear();
+            }
+        }
+        public Dictionary<int, int> GetTables(int restaurantId) {
             try {
                 List<TableEF> tablesEF = ctx.Table.Where(t => t.RestaurantId == restaurantId && t.IsDeleted == false).OrderBy(t => t.Tablenumber).ToList();
                 Dictionary<int, int> tableSeats = new Dictionary<int, int>();
@@ -137,51 +150,39 @@ namespace RESTaurantDLEF.Repositories {
                 }
                 return tableSeats;
             } catch (Exception ex) {
-                throw new RestaurantRepoException(nameof(GetTablesOfRestaurant), ex);
+                throw new RestaurantRepoException(nameof(GetTables), ex);
             } finally {
                 SaveAndClear();
             }
         }
-
-        public void DeleteTableOfRestaurant(int restaurantId, int tablenumber) {
-            try {
-                TableEF tEF = ctx.Table.Single(t => t.RestaurantId == restaurantId && t.Tablenumber == tablenumber && t.IsDeleted == false);
-                tEF.IsDeleted = true;
-            } catch (Exception ex) {
-                throw new RestaurantRepoException(nameof(DeleteTableOfRestaurant), ex);
-            } finally {
-                SaveAndClear();
-            }
-        }
-
-        public void UpdateTableOfRestaurant(int restaurantId, int tableNumber, int seats) {
+        public void UpdateTable(int restaurantId, int tableNumber, int seats) {
             // If we come in this method, we know that seatsamount has changed
             try {
                 TableEF tableEFDB = ctx.Table.Single(r => r.RestaurantId == restaurantId && r.Tablenumber == tableNumber && r.IsDeleted == false);
                 tableEFDB.Seats = seats;
             } catch (Exception ex) {
-                throw new RestaurantRepoException(nameof(UpdateTableOfRestaurant), ex);
+                throw new RestaurantRepoException(nameof(UpdateTable), ex);
             } finally {
                 SaveAndClear();
             }
         }
-
-        public Table GetTableOfRestaurant(int restaurantId, int tableNumber) {
+        public void DeleteTable(int restaurantId, int tablenumber) {
             try {
-                TableEF tableEFDB = ctx.Table.Single(r => r.RestaurantId == restaurantId && r.Tablenumber == tableNumber && r.IsDeleted == false);
-                return MapToDomain.MapTable(tableEFDB);
+                TableEF tEF = ctx.Table.Single(t => t.RestaurantId == restaurantId && t.Tablenumber == tablenumber && t.IsDeleted == false);
+                tEF.IsDeleted = true;
             } catch (Exception ex) {
-                throw new RestaurantRepoException(nameof(GetTableOfRestaurant), ex);
+                throw new RestaurantRepoException(nameof(DeleteTable), ex);
             } finally {
                 SaveAndClear();
             }
         }
 
-        public List<Restaurant> GetRestaurants(string kitchen, int? postalCode) {
+
+        public List<Restaurant> GetRestaurants(string? kitchen, int? postalCode) {
             try {
-                // At least one parameter should be filled in
+                // At least one parameter should be filled in, but the parameters are ok
                 List<Restaurant> restaurants;
-                if (string.IsNullOrWhiteSpace(kitchen)) {
+                if (string.IsNullOrWhiteSpace(kitchen) && postalCode.HasValue) {
                     // PostalCode is filled in & kitchen not
                     restaurants = ctx.Restaurant.Include(r => r.Location).Where(r => r.Location.PostalCode == postalCode.Value && r.IsDeleted == false).Select(rEF => MapToDomain.MapRestaurant(rEF)).ToList();
                 } else if (!postalCode.HasValue) {
@@ -193,7 +194,7 @@ namespace RESTaurantDLEF.Repositories {
                 }
                 return restaurants;
             } catch (Exception ex) {
-                throw new RestaurantRepoException(nameof(GetTableOfRestaurant), ex);
+                throw new RestaurantRepoException(nameof(GetTable), ex);
             } finally {
                 SaveAndClear();
             }

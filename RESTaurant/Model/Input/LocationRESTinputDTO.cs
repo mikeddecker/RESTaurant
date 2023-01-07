@@ -4,5 +4,9 @@
         public string City { get; set; }
         public string? Street { get; set; }
         public string? Housenumberlabel { get; set; }
+
+        public override string ToString() {
+            return $"{nameof(LocationRESTinputDTO)}, {PostalCode}, {City}, {Street}, {Housenumberlabel}";
+        }
     }
 }

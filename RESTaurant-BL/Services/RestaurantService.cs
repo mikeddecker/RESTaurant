@@ -18,6 +18,22 @@ namespace RESTaurantBL.Services {
             _restaurantRepo = restaurantRepo;
         }
 
+        #region KitchenTypes
+        public static List<string> GetKitchenTypes() {
+            return new List<string>(ConfigurationManager.AppSettings["kitchenTypes"].Split(';'));
+        }
+        public bool ContainsKitchenType(string kitchen) {
+            try {
+                return GetKitchenTypes().Contains(kitchen);
+            } catch (RestaurantServiceException) {
+                throw;
+            } catch (Exception ex) {
+                throw new RestaurantServiceException(nameof(ContainsKitchenType), ex);
+            }
+        }
+        #endregion
+
+        #region Restaurant CRUD
         public Restaurant AddRestaurant(Restaurant restaurant) {
             try {
                 if (restaurant == null) { throw new RestaurantServiceException("AddRestaurant - Restaurant is null"); }
@@ -30,9 +46,14 @@ namespace RESTaurantBL.Services {
                 throw new RestaurantServiceException("AddRestaurant", ex);
             }
         }
-
-        public static List<string> GetKitchenTypes() {
-            return new List<string>(ConfigurationManager.AppSettings["kitchenTypes"].Split(';'));
+    
+        public Restaurant GetRestaurant(int restaurantId) {
+            try {
+                if (!_restaurantRepo.DoesRestaurantExist(restaurantId)) { throw new RestaurantServiceException("GetRestaurant - RestaurantId doesn't exist"); }
+                return _restaurantRepo.GetRestaurant(restaurantId);
+            } catch (Exception ex) {
+                throw new RestaurantServiceException("GetRestaurant", ex);
+            }
         }
 
         public List<Restaurant> GetRestaurants() {
@@ -43,20 +64,21 @@ namespace RESTaurantBL.Services {
             }
         }
 
-        public Restaurant GetRestaurant(int restaurantId) {
+        public List<Restaurant> GetRestaurants(string? kitchen, int? postalCode) {
             try {
-                if (!_restaurantRepo.DoesRestaurantExist(restaurantId)) { throw new RestaurantServiceException("GetRestaurant - RestaurantId doesn't exist"); }
-                return _restaurantRepo.GetRestaurant(restaurantId);
-            } catch (Exception ex) {
-                throw new RestaurantServiceException("GetRestaurant", ex);
-            }
-        }
+                // At least one parameter should be filled in
+                if (!postalCode.HasValue && string.IsNullOrWhiteSpace(kitchen)) { throw new RestaurantServiceException($"{nameof(GetRestaurants)} - Both kitchentype and postalcode are not filled in"); }
 
-        public bool DoesExist(int restaurantId) {
-            try {
-                return _restaurantRepo.DoesRestaurantExist(restaurantId);
+                // Checking the filled in data, if filled in
+                if (!string.IsNullOrWhiteSpace(kitchen) && !ContainsKitchenType(kitchen)) { throw new RestaurantServiceException($"{nameof(GetRestaurants)} - Invalid kitchentype"); }
+                if (postalCode.HasValue) {
+                    // check postal code when it has a value
+                    if (postalCode.Value > 9999 || postalCode.Value < 1000) { throw new RestaurantServiceException($"{nameof(GetRestaurants)} - Invalid postal code {postalCode}"); }
+                }
+
+                return _restaurantRepo.GetRestaurants(kitchen, postalCode);
             } catch (Exception ex) {
-                throw new RestaurantServiceException("DoesExist", ex);
+                throw new RestaurantServiceException(nameof(GetRestaurants), ex);
             }
         }
 
@@ -73,7 +95,7 @@ namespace RESTaurantBL.Services {
                 throw new RestaurantServiceException("UpdateRestaurant", ex);
             }
         }
-
+        
         public void DeleteRestaurant(int restaurantId) {
             try {
                 if (!_restaurantRepo.DoesRestaurantExist(restaurantId)) { throw new RestaurantServiceException($"{System.Reflection.MethodBase.GetCurrentMethod().Name} - Restaurant does not exist"); }
@@ -81,32 +103,34 @@ namespace RESTaurantBL.Services {
             } catch (RestaurantServiceException) {
                 throw;
             } catch (Exception ex) {
-                throw new RestaurantServiceException(System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
+                throw new RestaurantServiceException(nameof(DeleteRestaurant), ex);
             }
         }
+        #endregion
 
-        public void AddTableToRestaurant(int restaurantId, int tableNumber, int seats) {
+        #region Tables
+        public void AddTable(int restaurantId, int tableNumber, int seats) {
             try {
-                if (restaurantId <= 0) { throw new RestaurantServiceException($"{System.Reflection.MethodBase.GetCurrentMethod().Name} - Invalid restaurant idea"); }
-                if (seats <= 0) { throw new RestaurantServiceException($"{System.Reflection.MethodBase.GetCurrentMethod().Name} - Seats must be more than 0"); }
+                if (restaurantId <= 0) { throw new RestaurantServiceException($"{nameof(AddTable)} - Invalid restaurant idea"); }
+                if (seats <= 0) { throw new RestaurantServiceException($"{nameof(AddTable)} - Seats must be more than 0"); }
 
                 // Repo checks
-                if (!_restaurantRepo.DoesRestaurantExist(restaurantId)) { throw new RestaurantServiceException($"{System.Reflection.MethodBase.GetCurrentMethod().Name} - RestaurantIdea does not exist"); }
-                if (_restaurantRepo.HasRestaurantTableNumber(restaurantId, tableNumber)) { throw new RestaurantServiceException($"{System.Reflection.MethodBase.GetCurrentMethod().Name} - Restaurant already has a tablenumber {tableNumber}"); }
+                if (!_restaurantRepo.DoesRestaurantExist(restaurantId)) { throw new RestaurantServiceException($"{nameof(AddTable)} - RestaurantIdea does not exist"); }
+                if (_restaurantRepo.HasRestaurantTableNumber(restaurantId, tableNumber)) { throw new RestaurantServiceException($"{nameof(AddTable)} - Restaurant already has a tablenumber {tableNumber}"); }
 
                 _restaurantRepo.AddTableToRestaurant(restaurantId, tableNumber, seats);
             } catch (RestaurantServiceException) {
                 throw;
             } catch (Exception ex) {
-                throw new RestaurantServiceException(System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
+                throw new RestaurantServiceException(nameof(AddTable), ex);
             }
         }
 
-        public Dictionary<int, int> GetTablesOfRestaurant(int restaurantId) {
+        public Dictionary<int, int> GetTables(int restaurantId) {
             try {
                 if (restaurantId <= 0) { throw new RestaurantServiceException($"{System.Reflection.MethodBase.GetCurrentMethod().Name} - Invalid restaurant idea"); }
                 if (!_restaurantRepo.DoesRestaurantExist(restaurantId)) { throw new RestaurantServiceException($"{System.Reflection.MethodBase.GetCurrentMethod().Name} - RestaurantId does not exist"); }
-                return _restaurantRepo.GetTablesOfRestaurant(restaurantId);
+                return _restaurantRepo.GetTables(restaurantId);
 
 
             } catch (RestaurantServiceException) {
@@ -116,81 +140,45 @@ namespace RESTaurantBL.Services {
             }
         }
 
-        public bool HasRestaurantTableNumber(int restaurantId, int tablenumber) {
+        public Table GetTable(int restaurantId, int tablenumber) {
             try {
-                if (!_restaurantRepo.DoesRestaurantExist(restaurantId)) { throw new RestaurantServiceException($"{nameof(HasRestaurantTableNumber)} - RestaurantIdea does not exist"); }
-                return _restaurantRepo.HasRestaurantTableNumber(restaurantId, tablenumber);
+                if (!_restaurantRepo.DoesRestaurantExist(restaurantId)) { throw new RestaurantServiceException($"{nameof(GetTable)} - RestaurantIdea does not exist"); }
+                if (!_restaurantRepo.HasRestaurantTableNumber(restaurantId, tablenumber)) { throw new RestaurantServiceException($"{nameof(GetTable)} - Restaurant with id {restaurantId} does not have tablenumber {tablenumber}"); }
+                return _restaurantRepo.GetTable(restaurantId, tablenumber);
             } catch (RestaurantServiceException) {
                 throw;
             } catch (Exception ex) {
-                throw new RestaurantServiceException(nameof(HasRestaurantTableNumber), ex);
+                throw new RestaurantServiceException(nameof(GetTable), ex);
             }
         }
-
-        public void DeleteTableOfRestaurant(int restaurantId, int tablenumber) {
+        public void UpdateTable(int restaurantId, int tableNumber, int seats) {
             try {
-                if (!_restaurantRepo.DoesRestaurantExist(restaurantId)) { throw new RestaurantServiceException($"{nameof(DeleteTableOfRestaurant)} - Restaurant does not exist"); }
-                if (!_restaurantRepo.HasRestaurantTableNumber(restaurantId, tablenumber)) { throw new RestaurantServiceException($"{nameof(DeleteTableOfRestaurant)} - Restaurant has no tablenumber {tablenumber}"); }
-                _restaurantRepo.DeleteTableOfRestaurant(restaurantId, tablenumber);
+                if (!_restaurantRepo.DoesRestaurantExist(restaurantId)) { throw new RestaurantServiceException($"{nameof(UpdateTable)} - Restaurant does not exist"); }
+                if (!_restaurantRepo.HasRestaurantTableNumber(restaurantId, tableNumber)) { throw new RestaurantServiceException($"{nameof(UpdateTable)} - Table {tableNumber} does not exist in restaurant"); }
+                Table table = _restaurantRepo.GetTable(restaurantId, tableNumber);
+                if (table.Equals(new Table(tableNumber, seats))) { throw new RestaurantServiceException($"{nameof(UpdateTable)} - Table hasn't changed"); }
+                _restaurantRepo.UpdateTable(restaurantId, tableNumber, seats);
             } catch (RestaurantServiceException) {
                 throw;
             } catch (Exception ex) {
-                throw new RestaurantServiceException(nameof(DeleteTableOfRestaurant), ex);
+                throw new RestaurantServiceException(nameof(UpdateTable), ex);
             }
         }
 
-        public void UpdateTableOfRestaurant(int restaurantId, int tableNumber, int seats) {
+        public void DeleteTable(int restaurantId, int tablenumber) {
             try {
-                if (!_restaurantRepo.DoesRestaurantExist(restaurantId)) { throw new RestaurantServiceException($"{nameof(UpdateTableOfRestaurant)} - Restaurant does not exist"); }
-                if (!_restaurantRepo.HasRestaurantTableNumber(restaurantId, tableNumber)) { throw new RestaurantServiceException($"{nameof(UpdateTableOfRestaurant)} - Table {tableNumber} does not exist in restaurant"); }
-                Table table = _restaurantRepo.GetTableOfRestaurant(restaurantId, tableNumber);
-                if (table.Equals(new Table(tableNumber, seats))) { throw new RestaurantServiceException($"{nameof(UpdateTableOfRestaurant)} - Table hasn't changed"); }
-                _restaurantRepo.UpdateTableOfRestaurant(restaurantId, tableNumber, seats);
+                if (!_restaurantRepo.DoesRestaurantExist(restaurantId)) { throw new RestaurantServiceException($"{nameof(DeleteTable)} - Restaurant does not exist"); }
+                if (!_restaurantRepo.HasRestaurantTableNumber(restaurantId, tablenumber)) { throw new RestaurantServiceException($"{nameof(DeleteTable)} - Restaurant has no tablenumber {tablenumber}"); }
+                _restaurantRepo.DeleteTable(restaurantId, tablenumber);
             } catch (RestaurantServiceException) {
                 throw;
             } catch (Exception ex) {
-                throw new RestaurantServiceException(nameof(UpdateTableOfRestaurant), ex);
+                throw new RestaurantServiceException(nameof(DeleteTable), ex);
             }
         }
 
-        public Table GetRestaurantTable(int restaurantId, int tablenumber) {
-            try {
-                if (!_restaurantRepo.DoesRestaurantExist(restaurantId)) { throw new RestaurantServiceException($"{nameof(HasRestaurantTableNumber)} - RestaurantIdea does not exist"); }
-                if (!_restaurantRepo.HasRestaurantTableNumber(restaurantId, tablenumber)) { throw new RestaurantServiceException($"{nameof(HasRestaurantTableNumber)} - Restaurant with id {restaurantId} does not have tablenumber {tablenumber}"); }
-                return _restaurantRepo.GetTableOfRestaurant(restaurantId, tablenumber);
-            } catch (RestaurantServiceException) {
-                throw;
-            } catch (Exception ex) {
-                throw new RestaurantServiceException(nameof(HasRestaurantTableNumber), ex);
-            }
-        }
+        #endregion
 
-        public List<Restaurant> GetRestaurants(string kitchen, int? postalCode) {
-            try {
-                // At least one parameter should be filled in
-                if (!postalCode.HasValue && string.IsNullOrWhiteSpace(kitchen)) { throw new RestaurantServiceException($"{nameof(GetRestaurants)} - Both kitchentype and postalcode are not filled in"); }
 
-                // Checking the filled in data, if filled in
-                if (!string.IsNullOrWhiteSpace(kitchen) && !ContainsKitchenType(kitchen)) { throw new RestaurantServiceException($"{nameof(GetRestaurants)} - Invalid kitchentype"); }
-                if (postalCode.HasValue) {
-                    // gives error when in && ??? don't know why, not gonna retry
-                    if (postalCode.Value > 9999 || postalCode.Value < 1000) { throw new RestaurantServiceException($"{nameof(GetRestaurants)} - Invalid postal code {postalCode}"); }
-                }
-
-                return _restaurantRepo.GetRestaurants(kitchen, postalCode);
-            } catch (Exception ex) {
-                throw new RestaurantServiceException(nameof(GetRestaurants), ex);
-            }
-        }
-
-        public bool ContainsKitchenType(string kitchen) {
-            try {
-                return GetKitchenTypes().Contains(kitchen);
-            } catch (RestaurantServiceException) {
-                throw;
-            } catch (Exception ex) {
-                throw new RestaurantServiceException(nameof(ContainsKitchenType), ex);
-            }
-        }
     }
 }

@@ -20,6 +20,8 @@ namespace RESTaurantBL.Services {
         public Reservation AddReservation(Reservation reservation) {
             try {
                 if (reservation == null) { throw new ReservationServiceException($"{nameof(AddReservation)} - Reservation is null"); }
+                if (!_restaurantRepository.DoesRestaurantExist(reservation.Restaurant.RestaurantId)) { throw new ReservationServiceException($"{nameof(AddReservation)} - Reservationrestaurant does not exist"); }
+                if (!_restaurantRepository.HasRestaurantTableNumber(reservation.Restaurant.RestaurantId,  reservation.Table.TableNumber)) { throw new ReservationServiceException($"{nameof(AddReservation)} - Restaurant does not contain tablenumber"); }
                 if (_reservationRepository.DoesReservationExist(reservation)) { throw new ReservationServiceException($"{nameof(AddReservation)} - Reservation already exists)"); }
                 if (_reservationRepository.DoesReservationOverlapCustomer(reservation)) { throw new ReservationServiceException($"{nameof(AddReservation)} - Reservation overlaps with another reservation of the customer"); }
                 if (_reservationRepository.DoesReservationOverlapTable(reservation)) { throw new ReservationServiceException($"{nameof(AddReservation)} - Reservation overlaps with another reservation for the reserved table or another reservation of the user"); }
@@ -34,7 +36,7 @@ namespace RESTaurantBL.Services {
         public void CancelReservation(int reservationId) {
             try {
                 if (reservationId <= 0) { throw new ReservationServiceException($"{nameof(CancelReservation)} - Invalid reservationIdea"); }
-                if (!_reservationRepository.DoesReservationExist(reservationId)) { throw new ReservationServiceException($"{nameof(AddReservation)} - Reservation does not exists)"); }
+                if (!_reservationRepository.DoesReservationExist(reservationId)) { throw new ReservationServiceException($"{nameof(CancelReservation)} - Reservation does not exists)"); }
 
                 _reservationRepository.CancelReservation(reservationId);
             } catch (ReservationServiceException) {
@@ -44,21 +46,21 @@ namespace RESTaurantBL.Services {
             }
         }
 
-        public List<Restaurant> CanIMakeReservation(DateTime date) {
+        public List<Restaurant> GetReservableRestaurantsOnDate(DateTime date) {
             try {
                 if (date.GetHashCode() == 0) {
-                    throw new ReservationServiceException($"{nameof(CanIMakeReservation)} - Date hashcode 0");
+                    throw new ReservationServiceException($"{nameof(GetReservableRestaurantsOnDate)} - Date hashcode 0");
                 }
                 if (date < DateTime.Now) {
-                    throw new ReservationServiceException($"{nameof(CanIMakeReservation)} - Date can't be in the past");
+                    throw new ReservationServiceException($"{nameof(GetReservableRestaurantsOnDate)} - Date can't be in the past");
                 }
 
-                return _reservationRepository.GetAvailableRestaurants(date);
+                return _reservationRepository.GetReservableRestaurants(date);
 
             } catch (ReservationServiceException) {
                 throw;
             } catch (Exception ex) {
-                throw new ReservationServiceException(nameof(ArrangeTableNumberOrNull), ex);
+                throw new ReservationServiceException(nameof(GetReservableRestaurantsOnDate), ex);
             }
         }
 

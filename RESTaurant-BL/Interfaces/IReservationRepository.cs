@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 namespace RESTaurantBL.Interfaces {
     public interface IReservationRepository {
         Reservation AddReservation(Reservation reservation);
-        Table? ArrangeBestFitTableOrNull(int restaurantId, DateTime perhapsOtherReservationDate, int maybeMoreOrLessSeats);
+        Table? ArrangeBestFitTableOrNull(int restaurantId, DateTime reservationDate, int maybeMoreOrLessSeats);
         void CancelReservation(int reservationId);
         bool DoesReservationExist(Reservation reservation);
         bool DoesReservationExist(int reservationId);
         bool DoesReservationOverlapCustomer(Reservation reservation);
         bool DoesReservationOverlapTable(Reservation reservation);
-        List<Restaurant> GetAvailableRestaurants(DateTime date);
+        List<Restaurant> GetReservableRestaurants(DateTime date);
         Reservation GetReservation(int reservationId);
         List<Reservation> GetReservations(int restaurantId, DateTime? day, DateTime? endDate);
         List<Reservation> GetReservationsOfCustomer(int customerId, DateTime beginDate, DateTime endDate);
