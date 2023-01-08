@@ -179,10 +179,8 @@ namespace RESTaurantDLEF.Repositories {
             }
         }
 
-        public List<Reservation> GetReservations(int restaurantId, DateTime? day, DateTime? endDate) {
+        public List<Reservation> GetReservations(int restaurantId, DateTime minDate, DateTime maxDate) {
             try {
-                DateTime minDate = day.HasValue ? day.Value : DateTime.Today;
-                DateTime maxDate = endDate.HasValue ? endDate.Value : DateTime.Today.AddDays(3650); // Whou would be crazy enough to reserve 10 years into the future? 
                 return ctx.Reservation.Include(r => r.Restaurant.Location).Include(r => r.Table).Include(r => r.Customer.Location).Where(r => r.Restaurant.RestaurantId == restaurantId && r.IsCanceled == false && r.IsDeleted == false && r.Date >= minDate && r.Date <= maxDate).Select(r => MapToDomain.MapReservation(r)).ToList();
             } catch (Exception ex) {
                 throw new ReservationRepoException(nameof(GetReservations), ex);

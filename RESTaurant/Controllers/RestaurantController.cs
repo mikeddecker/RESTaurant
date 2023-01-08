@@ -30,7 +30,7 @@ namespace RESTaurant.Controllers {
                 return CreatedAtAction(nameof(GetRestaurant), new { restaurantId = restaurant.RestaurantId }, MapToREST.MapRestaurant(hostURL, restaurant));
             } catch (Exception ex) {
                 _logger.LogError($"{nameof(AddRestaurant)} - {ex.Message}");
-                return NotFound(ex.Message);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -55,7 +55,7 @@ namespace RESTaurant.Controllers {
                 return Ok(MapToREST.MapRestaurant(hostURL, restaurant));
             } catch (Exception ex) {
                 _logger.LogError($"{nameof(GetRestaurant)} - {ex.Message}");
-                return NotFound(ex.Message);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -67,7 +67,7 @@ namespace RESTaurant.Controllers {
                 return Ok(MapToREST.MapRestaurantDetails(hostURL, restaurantId, _restaurantService));
             } catch (Exception ex) {
                 _logger.LogError($"{nameof(GetRestaurantDetails)} - {ex.Message}");
-                return NotFound(ex.Message);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -116,7 +116,7 @@ namespace RESTaurant.Controllers {
 
         [HttpPut]
         [Route("{restaurantId}/Table")]
-        public IActionResult UpdateTableOfRestaurant(int restaurantId, [FromBody] RestaurantTableRESTinputDTO tableRESTinput) {
+        public ActionResult<RestaurantDetailRESToutputDTO> UpdateTableOfRestaurant(int restaurantId, [FromBody] RestaurantTableRESTinputDTO tableRESTinput) {
             try {
                 _logger.LogInformation($"{nameof(UpdateTableOfRestaurant)}, {restaurantId}, {tableRESTinput}");
                 _restaurantService.UpdateTable(restaurantId, tableRESTinput.TableNumber, tableRESTinput.Seats);
@@ -148,7 +148,12 @@ namespace RESTaurant.Controllers {
         public ActionResult<List<ReservationRESToutputDTO>> GetReservations(int restaurantId, [FromQuery] DateTime? day, [FromQuery] DateTime? endDate) {
             try {
                 _logger.LogInformation($"{nameof(DeleteTableRestaurant)}, {restaurantId}, {day}, {endDate}");
-                List<Reservation> reservations = _reservationService.GetReservations(restaurantId, day, endDate);
+                DateTime beginDate = new DateTime(1900, 01, 01);
+                DateTime endDatum = new DateTime(2999, 12, 31);
+                if (day.GetHashCode() != 0) { beginDate = day.Value; }
+                if (endDate.GetHashCode() != 0) { endDatum = endDate.Value; }
+                //if (date < DateTime.Now) { return BadRequest($"Date can't be in the past"); }
+                List<Reservation> reservations = _reservationService.GetReservations(restaurantId, beginDate, endDatum);
                 List<ReservationRESToutputDTO> reservationListRESToutputs = MapToREST.MapReservationList(hostURL, reservations);
                 return Ok(reservationListRESToutputs);
             } catch (Exception ex) {

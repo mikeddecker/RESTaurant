@@ -148,9 +148,12 @@ namespace RESTaurantBL.Services {
             }
         }
 
-        public List<Reservation> GetReservations(int restaurantId, DateTime? day, DateTime? endDate) {
+        public List<Reservation> GetReservations(int restaurantId, DateTime day, DateTime endDate) {
             try {
-                if (day == null && endDate.HasValue) { throw new ReservationServiceException($"{nameof(GetReservations)} - Day must be filled in if endDate is filled in"); }
+                if (restaurantId <= 0) { throw new ReservationServiceException($"{nameof(GetReservations)} - restaurantId must be positive"); }
+                if (day.GetHashCode() == 0) { throw new ReservationServiceException($"{nameof(GetReservations)} - beginDate hashcode 0"); }
+                if (endDate.GetHashCode() == 0) { throw new ReservationServiceException($"{nameof(GetReservations)} - endDate hashcode 0"); }
+                if (day >= endDate) { throw new ReservationServiceException($"{nameof(GetReservations)} - enddate must be later than startdate"); }
                 return _reservationRepository.GetReservations(restaurantId, day, endDate);
             } catch (ReservationServiceException) {
                 throw;

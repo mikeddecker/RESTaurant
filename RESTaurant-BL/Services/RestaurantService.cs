@@ -40,6 +40,7 @@ namespace RESTaurantBL.Services {
         public Restaurant AddRestaurant(Restaurant restaurant) {
             try {
                 if (restaurant == null) { throw new RestaurantServiceException("AddRestaurant - Restaurant is null"); }
+                if (!_configWrapper.ContainsKitchenType(restaurant.Kitchen)) { throw new RestaurantServiceException("AddRestaurant - Restaurant kitchentype invalid"); }
                 if (_restaurantRepo.DoesRestaurantExist(restaurant)) { throw new RestaurantServiceException("AddRestaurant - Restaurant already exists"); }
                 _restaurantRepo.AddRestaurant(restaurant);
                 return restaurant;
@@ -88,6 +89,7 @@ namespace RESTaurantBL.Services {
         public Restaurant UpdateRestaurant(Restaurant restaurant) {
             try {
                 if (restaurant == null) { throw new RestaurantServiceException("UpdateRestaurant - Restaurant is null"); }
+                if (!_configWrapper.ContainsKitchenType(restaurant.Kitchen)) { throw new RestaurantServiceException("AddRestaurant - Restaurant kitchentype invalid"); }
                 if (!_restaurantRepo.DoesRestaurantExist(restaurant.RestaurantId)) { throw new RestaurantServiceException("UpdateRestaurant - Restaurant does not exist"); }
                 Restaurant restaurantDB = _restaurantRepo.GetRestaurant(restaurant.RestaurantId);
                 if (restaurantDB.HasTheSameProperties(restaurant)) { throw new RestaurantServiceException("Restaurant hasn't changed"); }
