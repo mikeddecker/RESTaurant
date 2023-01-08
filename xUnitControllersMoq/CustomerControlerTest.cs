@@ -233,9 +233,9 @@ namespace xUnitControllersMoq {
 
         [Fact]
         public void DeleteCustomer_InvalidID_BadRequest() {
-            var result = _customerController.GetCustomer(-3);
+            var result = _customerController.DeleteCustomer(-3);
 
-            Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.IsType<BadRequestObjectResult>(result);
         }
 
         [Fact]
@@ -850,7 +850,7 @@ namespace xUnitControllersMoq {
                 customer.SetCustomerId(1);
                 Restaurant restaurant = new Restaurant("Cartoon", new Location(9280, "Lebbeke"), "french", "info@cartoon.be", "+32478090859");
                 restaurant.SetRestaurantId(1);
-                Reservation reservation = new Reservation(restaurant, customer, new Table(3, 4), 4, new DateTime(2030, 2, 2, 2, 30, 0)); 
+                Reservation reservation = new Reservation(restaurant, customer, new Table(3, 4), 4, new DateTime(2030, 2, 2, 2, 30, 0));
                 Reservation updatedReservation = new Reservation(reservationId, restaurant, customer, new Table(3, 4), 4, new DateTime(2030, 2, 2, 2, 30, 0), false);
 
                 _mockRepoReservation.Setup(repo => repo.GetReservation(reservationId)).Returns(reservation);
@@ -896,7 +896,7 @@ namespace xUnitControllersMoq {
                 _mockRepoReservation.Setup(repo => repo.GetReservation(reservationId)).Returns(reservation);
 
                 if (day.HasValue && day.Value > DateTime.Now && seats.HasValue && seats.Value > 0) {
-                    _mockRepoReservation.Setup(repo => repo.ArrangeBestFitTableOrNull(1, day.Value, seats.Value)).Returns(new Table(4,seats.Value));
+                    _mockRepoReservation.Setup(repo => repo.ArrangeBestFitTableOrNull(1, day.Value, seats.Value)).Returns(new Table(4, seats.Value));
                     updatedReservation.SetSeats(seats.Value);
                     updatedReservation.SetDate(day.Value);
                 } else if (day.HasValue && day.Value > DateTime.Now) {
@@ -963,9 +963,82 @@ namespace xUnitControllersMoq {
         #endregion
 
         #region CancelReservation
+
+        [Fact]
+        public void CancelReservation_UnknownID_BadRequest() {
+            _mockRepoReservation.Setup(repo => repo.DoesReservationExist(333)).Returns(false);
+
+            var result = _customerController.CancelReservation(333);
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(0)]
+        public void CancelReservation_InvalidID_BadRequest(int id) {
+            var result = _customerController.CancelReservation(id);
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        [Fact]
+        public void CancelReservation_Valid_NoContentResult() {
+            _mockRepoReservation.Setup(repo => repo.DoesReservationExist(333)).Returns(true);
+
+            var result = _customerController.CancelReservation(333);
+            Assert.IsType<NoContentResult>(result);
+        }
         #endregion
 
         #region GetReservableRestaurants
+        [Fact]
+        public void GetReservableRestaurants_Invalid_DateHash0() {
+            var result = _customerController.GetReservableRestaurants(dateHash0);
+
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+        }
+
+        [Fact]
+        public void GetReservableRestaurants_Invalid_DateInThePast() {
+            var result = _customerController.GetReservableRestaurants(new DateTime(2022,12,30));
+
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+        }
+
+        [Fact]
+        public void GetReservableRestaurants_OkResult() {
+            #region restaurant
+            Customer customer = new Customer("Mike", "info@mike.be", "+32478090859", new Location(9255, "Buggenhout"));
+            customer.SetCustomerId(1);
+            Restaurant restaurant = new Restaurant("Cartoon", new Location(9280, "Lebbeke"), "french", "info@cartoon.be", "+32478090859");
+            restaurant.SetRestaurantId(1);
+            
+            List<Restaurant> restaurants = new List<Restaurant>();
+            restaurants.Add(restaurant);
+            #endregion
+            _mockRepoReservation.Setup(repo => repo.GetReservableRestaurants(new DateTime(2025, 12, 30))).Returns(restaurants);
+
+            var result = _customerController.GetReservableRestaurants(new DateTime(2025, 12, 30));
+            Assert.IsType<OkObjectResult>(result.Result);
+        }
+
+        [Fact]
+        public void GetReservableRestaurants_ReturnsListRestaurantREST() {
+            #region restaurant
+            Customer customer = new Customer("Mike", "info@mike.be", "+32478090859", new Location(9255, "Buggenhout"));
+            customer.SetCustomerId(1);
+            Restaurant restaurant = new Restaurant("Cartoon", new Location(9280, "Lebbeke"), "french", "info@cartoon.be", "+32478090859");
+            restaurant.SetRestaurantId(1);
+
+            List<Restaurant> restaurants = new List<Restaurant>();
+            restaurants.Add(restaurant);
+            #endregion
+            _mockRepoReservation.Setup(repo => repo.GetReservableRestaurants(new DateTime(2025, 12, 30))).Returns(restaurants);
+
+            var result = _customerController.GetReservableRestaurants(new DateTime(2025, 12, 30));
+            Assert.IsType<OkObjectResult>(result.Result);
+            Assert.IsType<List<RestaurantRESToutputDTO>>((result.Result as OkObjectResult).Value);
+            Assert.Contains("Cartoon", ((result.Result as OkObjectResult).Value as List<RestaurantRESToutputDTO>).Select(r => r.Name));
+        }
         #endregion
     }
 }

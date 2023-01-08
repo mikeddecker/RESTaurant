@@ -108,7 +108,7 @@ namespace RESTaurant.Controllers {
                 return CreatedAtAction(nameof(GetRestaurantDetails), new { restaurantId = restaurantId }, MapToREST.MapRestaurantDetails(hostURL, restaurantId, _restaurantService));
             } catch (Exception ex) {
                 _logger.LogError($"{nameof(AddRestaurantTable)} - {ex.Message}");
-                return NotFound(ex.Message);
+                return BadRequest(ex.Message);
             }
         }
 

@@ -86,7 +86,7 @@ namespace RESTaurant.Controllers {
         }
 
         [HttpDelete("Goodbye/{customerId}")]
-        public ActionResult DeleteCustomer(int customerId) {
+        public IActionResult DeleteCustomer(int customerId) {
             try {
                 _logger.LogInformation($"{nameof(DeleteCustomer)}, {customerId}");
                 if (customerId <= 0) { return BadRequest($"{nameof(DeleteCustomer)} - Invalid customerId"); }

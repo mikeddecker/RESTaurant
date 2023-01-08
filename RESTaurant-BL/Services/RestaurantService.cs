@@ -129,7 +129,7 @@ namespace RESTaurantBL.Services {
             }
         }
 
-        public Dictionary<int, int> GetTables(int restaurantId) {
+        public Dictionary<int, int> GetTables_TableNumber_Seats(int restaurantId) {
             try {
                 if (restaurantId <= 0) { throw new RestaurantServiceException($"{System.Reflection.MethodBase.GetCurrentMethod().Name} - Invalid restaurant idea"); }
                 if (!_restaurantRepo.DoesRestaurantExist(restaurantId)) { throw new RestaurantServiceException($"{System.Reflection.MethodBase.GetCurrentMethod().Name} - RestaurantId does not exist"); }
